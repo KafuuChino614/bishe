@@ -95,3 +95,12 @@ export const getMy_goodsTypeList = (params) => {
     params
   })
 }
+
+
+export const getMy_goodsTypePublic = (params) => {
+  return service({
+    url: '/my_goodsType/getMy_goodsTypePublic',
+    method: 'get',
+    params
+  })
+}

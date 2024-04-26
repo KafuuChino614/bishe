@@ -7,9 +7,13 @@
        </el-form-item>
         <el-form-item label="商品类型:" prop="goodsType">
           <el-input v-model="formData.goodsType" :clearable="true"  placeholder="请输入商品类型" />
+          <!-- TODO  -->
+          <!-- <el-select v-model="formData.goodsType" placeholder="请选择商品类型" style="width:100%" :clearable="true" >
+              <el-option v-for="(item,key) in goodsTypeOptions" :key="key" :label="item.label" :value="item.value" />
+           </el-select> -->
        </el-form-item>
         <el-form-item label="商品单位:" prop="goodsUnit">
-          <el-input v-model="formData.goodsUnit" :clearable="true"  placeholder="请输入商品单位" />
+          <el-input v-model="formData.goodsUnit" :clearable="true"  placeholder="请选择商品单位" />
        </el-form-item>
         <el-form-item label="商品价格:" prop="goodsPrice">
           <el-input-number v-model="formData.goodsPrice" :precision="2" :clearable="true"></el-input-number>
@@ -36,6 +40,9 @@ import {
   findMy_goods
 } from '@/api/mySys/my_goods'
 
+
+
+
 defineOptions({
     name: 'My_goodsForm'
 })
@@ -48,6 +55,7 @@ import { ref, reactive } from 'vue'
 
 const route = useRoute()
 const router = useRouter()
+
 
 const type = ref('')
 const formData = ref({

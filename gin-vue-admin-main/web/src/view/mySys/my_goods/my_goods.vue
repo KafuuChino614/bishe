@@ -94,10 +94,16 @@
               <el-input v-model="formData.goodsName" :clearable="true"  placeholder="请输入商品名" />
             </el-form-item>
             <el-form-item label="商品类型:"  prop="goodsType" >
-              <el-input v-model="formData.goodsType" :clearable="true"  placeholder="请输入商品类型" />
+              <!-- --------------------------------------------------------------------------------------------- -->
+              <el-select v-model="formData.goodsType" placeholder="请选择商品类型" style="width:100%" :clearable="true" >
+                <el-option v-for="(item,key) in goodsTypeOptions" :key="key" :label="item" :value="item" />
+              </el-select>
             </el-form-item>
             <el-form-item label="商品单位:"  prop="goodsUnit" >
-              <el-input v-model="formData.goodsUnit" :clearable="true"  placeholder="请输入商品单位" />
+              <!-- <el-input v-model="formData.goodsUnit" :clearable="true"  placeholder="请输入商品单位" /> -->
+              <el-select v-model="formData.goodsUnit" placeholder="请选择商品单位" style="width:100%" :clearable="true" >
+                <el-option v-for="(item,key) in goodsUnitOptions" :key="key" :label="item" :value="item" />
+              </el-select>
             </el-form-item>
             <el-form-item label="商品价格:"  prop="goodsPrice" >
               <el-input-number v-model="formData.goodsPrice"  style="width:100%" :precision="2" :clearable="true"  />
@@ -106,7 +112,10 @@
               <el-input v-model.number="formData.goodsNum" :clearable="true" placeholder="请输入商品库存" />
             </el-form-item>
             <el-form-item label="商品供货商:"  prop="goodsVender" >
-              <el-input v-model="formData.goodsVender" :clearable="true"  placeholder="请输入商品供货商" />
+              <!-- <el-input v-model="formData.goodsVender" :clearable="true"  placeholder="请输入商品供货商" /> -->
+              <el-select v-model="formData.goodsVender" placeholder="请选择供货商" style="width:100%" :clearable="true" >
+                <el-option v-for="(item,key) in goodsVenderOptions" :key="key" :label="item" :value="item" />
+              </el-select>
             </el-form-item>
           </el-form>
     </el-drawer>
@@ -151,6 +160,34 @@ import {
   getMy_goodsList
 } from '@/api/mySys/my_goods'
 
+import {
+  createMy_goodsType,
+  deleteMy_goodsType,
+  deleteMy_goodsTypeByIds,
+  updateMy_goodsType,
+  findMy_goodsType,
+  getMy_goodsTypeList,
+  getMy_goodsTypePublic
+} from '@/api/mySys/my_goodsType'
+
+import {
+  createMy_goodsUnit,
+  deleteMy_goodsUnit,
+  deleteMy_goodsUnitByIds,
+  updateMy_goodsUnit,
+  findMy_goodsUnit,
+  getMy_goodsUnitList
+} from '@/api/mySys/my_goodsUnit'
+
+import {
+  createMy_vendor,
+  deleteMy_vendor,
+  deleteMy_vendorByIds,
+  updateMy_vendor,
+  findMy_vendor,
+  getMy_vendorList
+} from '@/api/mySys/my_vendor'
+
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -161,6 +198,8 @@ defineOptions({
 })
 
 // 自动化生成的字典（可能为空）以及字段
+
+
 const formData = ref({
         goodsName: '',
         goodsType: '',
@@ -293,14 +332,32 @@ const getTableData = async() => {
 getTableData()
 
 // ============== 表格控制部分结束 ===============
-
+var goodsTypeOptions = []
+var goodsUnitOptions = []
+var goodsVenderOptions=[]
 // 获取需要的字典 可能为空 按需保留
 const setOptions = async () =>{
+  var tmp=ref([])
+  var tmp1=ref([])
+  var tmp2=ref([])
+  tmp.value = await (await getMy_goodsTypeList()).data.list
+  tmp1.value=await (await getMy_goodsUnitList()).data.list
+  tmp2.value=await (await getMy_vendorList()).data.list
+  for(var i=0;i<tmp.value.length;i++){
+    goodsTypeOptions.push(tmp.value[i].typeName)
+  }
+  for(var i=0;i<tmp1.value.length;i++){
+    goodsUnitOptions.push(tmp1.value[i].unitName)
+  }
+  for(var i=0;i<tmp2.value.length;i++){
+    goodsVenderOptions.push(tmp2.value[i].venderName)
+    console.log("----------------------------s-----------------------------------------")
+    console.log(tmp2)
+  }
 }
 
 // 获取需要的字典 可能为空 按需保留
 setOptions()
-
 
 // 多选数据
 const multipleSelection = ref([])
