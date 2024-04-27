@@ -6,16 +6,14 @@
     <span>
       <a
         class="text-gray-800 font-bold"
-        href="https://github.com/flipped-aurora/gin-vue-admin"
-      >Gin-Vue-Admin</a>
+      >HAUT</a>
     </span>
     <slot />
     <span>Copyright</span>
     <span>
       <a
         class="text-gray-800 font-bold"
-        href="https://github.com/flipped-aurora"
-      >flipped-aurora团队</a>
+      >lyk</a>
     </span>
   </div>
 </template>

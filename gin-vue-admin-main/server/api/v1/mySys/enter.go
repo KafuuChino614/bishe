@@ -5,4 +5,5 @@ type ApiGroup struct {
 	My_goodsTypeApi
 	My_goodsUnitApi
 	My_goodsApi
+	WareHouseApi
 }

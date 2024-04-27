@@ -5,4 +5,5 @@ type RouterGroup struct {
 	My_goodsTypeRouter
 	My_goodsUnitRouter
 	My_goodsRouter
+	WareHouseRouter
 }

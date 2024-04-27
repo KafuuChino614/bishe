@@ -5,4 +5,5 @@ type ServiceGroup struct {
 	My_goodsTypeService
 	My_goodsUnitService
 	My_goodsService
+	WareHouseService
 }
