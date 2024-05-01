@@ -22,7 +22,7 @@
     <div class="gva-table-box">
         <div class="gva-btn-list">
             <el-button type="primary" icon="plus" @click="openDialog">商品入库</el-button>
-            <el-button icon="delete" style="margin-left: 10px;" :disabled="!multipleSelection.length" @click="onDelete">商品出库</el-button>
+            <!-- <el-button icon="delete" style="margin-left: 10px;" :disabled="!multipleSelection.length" @click="onDelete">商品出库</el-button> -->
         </div>
         <el-table
         ref="multipleTable"
@@ -38,6 +38,11 @@
         <el-table-column align="left" label="商品数量" prop="num" width="350" />
         <el-table-column align="left" label="商品单价" prop="price" width="350" />
         <el-table-column align="left" label="商品总价" prop="priceAll" width="350" />
+        <el-table-column align="left" label="操作" fixed="right" min-width="240">
+            <template #default="scope">
+            <el-button type="primary" link icon="edit" class="table-button" @click="updateWareHouseInfoFunc(scope.row)">出库</el-button>
+            </template>
+        </el-table-column>
         </el-table>
 
         <div class="gva-pagination">
@@ -88,6 +93,45 @@
           </el-form>
     </el-drawer>
       <!-- ------------------------------------------新增入库单 END!----------------------------------------------- -->
+
+
+
+
+
+
+
+<!-- ------------------------------------------新增出库单----------------------------------------------- -->
+<el-drawer size="800" v-model="dialogFormVisible_out" :show-close="false" :before-close="closeDialog">
+       <template #header>
+              <div class="flex justify-between items-center">
+                <span class="text-lg">出库商品</span>
+                <div>
+                  <el-button type="primary" @click="enterDialog">确 定</el-button>
+                  <el-button @click="closeDialog">取 消</el-button>
+                </div>
+              </div>
+            </template>
+
+          <el-form :model="formData_out" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
+            <el-form-item label="仓库名:"  prop="wareHouseName" >
+              <el-input v-model.number="formData_out.wareHouseName" :clearable="false" disabled="true"/>
+            </el-form-item>
+            <el-form-item label="商品名:"  prop="goodsName" >
+              <el-input v-model.number="formData_out.goodsName" :clearable="false" disabled="true"/>
+            </el-form-item>
+            <el-form-item label="最大可出库数量:">
+              <el-input v-model.number="formData_out.numAlow" disabled="true"/>
+            </el-form-item>
+            <el-form-item label="出库数量:"  prop="num" >
+              <el-input v-model.number="formData_out.num" :clearable="true" />
+            </el-form-item>
+            <el-form-item label="商品单价:"  prop="price" >
+              <el-input-number v-model="formData_out.price"  style="width:100%" :precision="2" :clearable="true"  disabled="true" />
+            </el-form-item>
+
+          </el-form>
+    </el-drawer>
+<!-- ------------------------------------------新增出库单------END!!!!!!!----------------------------------------- -->
   </div>
 </template>
 
@@ -141,7 +185,15 @@ const formData = ref({
         goodsName: '',
         numAlow:'',//可入库数量
         })
-
+const formData_out = ref({
+        wareHouseID: '',
+        goodsID: '',
+        num: 0,
+        price: 0,
+        wareHouseName: '',
+        goodsName: '',
+        numAlow:'',//最大可出库数量
+        })
 
 // 验证规则
 const rule = reactive({
@@ -281,7 +333,6 @@ const setOptions = async () =>{
   }
   for(var i=0;i<tmp1.value.length;i++){
     goodsNameOptions.push(tmp1.value[i])
-    console.log(goodsNameOptions[i])
   }
   
 }
@@ -305,89 +356,29 @@ const changeGoods = async () =>{
 
 }
 
-// 多选数据
-const multipleSelection = ref([])
-// 多选
-const handleSelectionChange = (val) => {
-    multipleSelection.value = val
-}
-
-// 删除行
-const deleteRow = (row) => {
-    ElMessageBox.confirm('确定要删除吗?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-    }).then(() => {
-            deleteWareHouseInfoFunc(row)
-        })
-    }
-
-// 多选删除
-const onDelete = async() => {
-  ElMessageBox.confirm('确定要删除吗?', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(async() => {
-      const IDs = []
-      if (multipleSelection.value.length === 0) {
-        ElMessage({
-          type: 'warning',
-          message: '请选择要删除的数据'
-        })
-        return
-      }
-      multipleSelection.value &&
-        multipleSelection.value.map(item => {
-          IDs.push(item.ID)
-        })
-      const res = await deleteWareHouseInfoByIds({ IDs })
-      if (res.code === 0) {
-        ElMessage({
-          type: 'success',
-          message: '删除成功'
-        })
-        if (tableData.value.length === IDs.length && page.value > 1) {
-          page.value--
-        }
-        getTableData()
-      }
-      })
-    }
 
 // 行为控制标记（弹窗内部需要增还是改）
 const type = ref('')
 
-// 更新行
+//TODO
+// 更新行  (出库操作)
+var num_out  //用来记录查询到的商品数量
 const updateWareHouseInfoFunc = async(row) => {
     const res = await findWareHouseInfo({ ID: row.ID })
     type.value = 'update'
     if (res.code === 0) {
-        formData.value = res.data.rewareHouseInfo
-        dialogFormVisible.value = true
+        formData_out.value = res.data.rewareHouseInfo
+        formData_out.value.numAlow= res.data.rewareHouseInfo.num
+        num_out=formData_out.value.numAlow
+        formData_out.value.num= 0
+        dialogFormVisible_out.value = true
     }
 }
 
-
-// 删除行
-const deleteWareHouseInfoFunc = async (row) => {
-    const res = await deleteWareHouseInfo({ ID: row.ID })
-    if (res.code === 0) {
-        ElMessage({
-                type: 'success',
-                message: '删除成功'
-            })
-            if (tableData.value.length === 1 && page.value > 1) {
-            page.value--
-        }
-        getTableData()
-    }
-}
 
 // 弹窗控制标记
 const dialogFormVisible = ref(false)
-
+const dialogFormVisible_out = ref(false)
 
 // 查看详情控制标记
 const detailShow = ref(false)
@@ -434,6 +425,7 @@ const openDialog = () => {
 // 关闭弹窗
 const closeDialog = () => {
     dialogFormVisible.value = false
+    dialogFormVisible_out.value = false
     formData.value = {
         wareHouseID: '',
         goodsID: '',
@@ -442,6 +434,17 @@ const closeDialog = () => {
         wareHouseName: '',
         goodsName: '',
         }
+
+
+        formData_out.value = {
+        wareHouseID: '',
+        goodsID: '',
+        num: 0,
+        price: 0,
+        wareHouseName: '',
+        goodsName: '',
+      }
+
 }
 // 弹窗确定
 const enterDialog = async () => {
@@ -456,6 +459,16 @@ const enterDialog = async () => {
                 return
             }
 
+            if(type.value=='update'){
+              if(formData_out.value.num>formData_out.value.numAlow||formData_out.value.num<0){
+              ElMessage({
+                  type:'error',
+                  message: '数量输入范围不合法，出库失败'
+                })
+                closeDialog()
+                return
+            }
+          }
 
              if (!valid) return
               let res
@@ -464,12 +477,24 @@ const enterDialog = async () => {
                   res = await createWareHouseInfo(formData.value)
                   break
                 case 'update':
-                  res = await updateWareHouseInfo(formData.value)
+                  formData_out.value.num=formData_out.value.numAlow-formData_out.value.num
+                  res = await updateWareHouseInfo(formData_out.value)
                   break
                 default:
                   res = await createWareHouseInfo(formData.value)
                   break
               }
+              if(res.code === 0&&type.value=='update'){
+                ElMessage({
+                  type: 'success',
+                  message: '出库成功'
+                })
+                closeDialog()
+                setOptions()
+                getTableData()
+                return
+              }
+
               if (res.code === 0) {
                 ElMessage({
                   type: 'success',
