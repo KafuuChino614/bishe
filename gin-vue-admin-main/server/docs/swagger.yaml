@@ -150,6 +150,9 @@ definitions:
     type: object
   config.Mongo:
     properties:
+      auth-source:
+        description: 验证数据库
+        type: string
       coll:
         description: collection name
         type: string
@@ -384,12 +387,20 @@ definitions:
       addr:
         description: 服务器地址:端口
         type: string
+      clusterAddrs:
+        description: 集群模式下的节点地址列表
+        items:
+          type: string
+        type: array
       db:
-        description: redis的哪个数据库
+        description: 单实例模式下redis的哪个数据库
         type: integer
       password:
         description: 密码
         type: string
+      useCluster:
+        description: 是否使用集群模式
+        type: boolean
     type: object
   config.Server:
     properties:
@@ -542,9 +553,6 @@ definitions:
       db-type:
         description: 数据库类型:mysql(默认)|sqlite|sqlserver|postgresql
         type: string
-      env:
-        description: 环境值
-        type: string
       iplimit-count:
         type: integer
       iplimit-time:
@@ -555,7 +563,7 @@ definitions:
       router-prefix:
         type: string
       use-mongo:
-        description: 使用redis
+        description: 使用mongo
         type: boolean
       use-multipoint:
         description: 多点登录拦截
@@ -728,6 +736,199 @@ definitions:
       to:
         description: 收件人:多个以英文逗号分隔 例：a@qq.com b@qq.com 正式开发中请把此项目作为参数使用
         type: string
+    type: object
+  mySys.My_goods:
+    properties:
+      ID:
+        description: 主键ID
+        type: integer
+      createdAt:
+        description: 创建时间
+        type: string
+      createdBy:
+        type: integer
+      deletedBy:
+        type: integer
+      goodsName:
+        description: 商品名
+        type: string
+      goodsNum:
+        description: 商品库存
+        type: integer
+      goodsPrice:
+        description: 商品价格
+        type: number
+      goodsType:
+        description: 商品类型
+        type: string
+      goodsUnit:
+        description: 商品单位
+        type: string
+      goodsVender:
+        description: 商品供货商
+        type: string
+      updatedAt:
+        description: 更新时间
+        type: string
+      updatedBy:
+        type: integer
+    required:
+    - goodsName
+    - goodsPrice
+    - goodsType
+    - goodsUnit
+    - goodsVender
+    type: object
+  mySys.My_goodsType:
+    properties:
+      ID:
+        description: 主键ID
+        type: integer
+      createdAt:
+        description: 创建时间
+        type: string
+      createdBy:
+        type: integer
+      deletedBy:
+        type: integer
+      typeName:
+        description: 商品名
+        type: string
+      updatedAt:
+        description: 更新时间
+        type: string
+      updatedBy:
+        type: integer
+    required:
+    - typeName
+    type: object
+  mySys.My_goodsUnit:
+    properties:
+      ID:
+        description: 主键ID
+        type: integer
+      createdAt:
+        description: 创建时间
+        type: string
+      createdBy:
+        type: integer
+      deletedBy:
+        type: integer
+      unitName:
+        description: 计量单位
+        type: string
+      updatedAt:
+        description: 更新时间
+        type: string
+      updatedBy:
+        type: integer
+    required:
+    - unitName
+    type: object
+  mySys.My_vendor:
+    properties:
+      ID:
+        description: 主键ID
+        type: integer
+      createdAt:
+        description: 创建时间
+        type: string
+      createdBy:
+        type: integer
+      deletedBy:
+        type: integer
+      header:
+        description: 负责人
+        type: string
+      updatedAt:
+        description: 更新时间
+        type: string
+      updatedBy:
+        type: integer
+      venderAddr:
+        description: 厂家地址
+        type: string
+      venderClass:
+        description: 厂家类型
+        type: string
+      venderName:
+        description: 厂家名
+        type: string
+      venderPhone:
+        description: 厂家电话
+        type: string
+    required:
+    - header
+    - venderAddr
+    - venderClass
+    - venderName
+    - venderPhone
+    type: object
+  mySys.WareHouse:
+    properties:
+      ID:
+        description: 主键ID
+        type: integer
+      createdAt:
+        description: 创建时间
+        type: string
+      createdBy:
+        type: integer
+      deletedBy:
+        type: integer
+      updatedAt:
+        description: 更新时间
+        type: string
+      updatedBy:
+        type: integer
+      wareHouseName:
+        description: 仓库名字
+        type: string
+    required:
+    - wareHouseName
+    type: object
+  mySys.WareHouseInfo:
+    properties:
+      ID:
+        description: 主键ID
+        type: integer
+      createdAt:
+        description: 创建时间
+        type: string
+      createdBy:
+        type: integer
+      deletedBy:
+        type: integer
+      goodsID:
+        description: 商品ID
+        type: integer
+      goodsName:
+        description: 商品名字
+        type: string
+      num:
+        description: 商品数量
+        type: integer
+      price:
+        description: 商品单价
+        type: number
+      updatedAt:
+        description: 更新时间
+        type: string
+      updatedBy:
+        type: integer
+      wareHouseID:
+        description: 仓库ID
+        type: integer
+      wareHouseName:
+        description: 仓库名字
+        type: string
+    required:
+    - goodsID
+    - goodsName
+    - num
+    - price
+    - wareHouseID
+    - wareHouseName
     type: object
   request.AddMenuAuthorityInfo:
     properties:
@@ -1104,6 +1305,9 @@ definitions:
       autoCreateApiToSql:
         description: 是否自动创建api
         type: boolean
+      autoCreateMenuToSql:
+        description: 是否自动创建menu
+        type: boolean
       autoCreateResource:
         description: 是否自动创建资源标识
         type: boolean
@@ -1120,7 +1324,8 @@ definitions:
         items:
           $ref: '#/definitions/system.Field'
         type: array
-      hasTimer:
+      gvaModel:
+        description: 是否使用gva默认Model
         type: boolean
       humpPackageName:
         description: go文件名称
@@ -1130,11 +1335,33 @@ definitions:
       packageName:
         description: 文件名称
         type: string
+      primaryField:
+        $ref: '#/definitions/system.Field'
       structName:
         description: Struct名称
         type: string
       tableName:
         description: 表名
+        type: string
+    type: object
+  system.Condition:
+    properties:
+      ID:
+        description: 主键ID
+        type: integer
+      column:
+        type: string
+      createdAt:
+        description: 创建时间
+        type: string
+      from:
+        type: string
+      operator:
+        type: string
+      templateID:
+        type: string
+      updatedAt:
+        description: 更新时间
         type: string
     type: object
   system.Field:
@@ -1150,6 +1377,9 @@ definitions:
         type: string
       dataTypeLong:
         description: 数据库字段长度
+        type: string
+      defaultValue:
+        description: 是否必填
         type: string
       dictType:
         description: 字典
@@ -1172,12 +1402,35 @@ definitions:
       fieldType:
         description: Field数据类型
         type: string
+      primaryKey:
+        description: 是否主键
+        type: boolean
       require:
         description: 是否必填
         type: boolean
       sort:
         description: 是否增加排序
         type: boolean
+    type: object
+  system.JoinTemplate:
+    properties:
+      ID:
+        description: 主键ID
+        type: integer
+      createdAt:
+        description: 创建时间
+        type: string
+      joins:
+        type: string
+      "on":
+        type: string
+      table:
+        type: string
+      templateID:
+        type: string
+      updatedAt:
+        description: 更新时间
+        type: string
     type: object
   system.Meta:
     properties:
@@ -1315,7 +1568,7 @@ definitions:
         type: array
       parentId:
         description: 父菜单ID
-        type: string
+        type: integer
       path:
         description: 路由path
         type: string
@@ -1423,7 +1676,46 @@ definitions:
         type: string
       value:
         description: 字典值
+        type: string
+    type: object
+  system.SysExportTemplate:
+    properties:
+      ID:
+        description: 主键ID
         type: integer
+      conditions:
+        items:
+          $ref: '#/definitions/system.Condition'
+        type: array
+      createdAt:
+        description: 创建时间
+        type: string
+      dbName:
+        description: 数据库名称
+        type: string
+      joinTemplate:
+        items:
+          $ref: '#/definitions/system.JoinTemplate'
+        type: array
+      limit:
+        type: integer
+      name:
+        description: 模板名称
+        type: string
+      order:
+        type: string
+      tableName:
+        description: 表名称
+        type: string
+      templateID:
+        description: 模板标识
+        type: string
+      templateInfo:
+        description: 模板信息
+        type: string
+      updatedAt:
+        description: 更新时间
+        type: string
     type: object
   system.SysMenu:
     properties:
@@ -1456,7 +1748,7 @@ definitions:
           $ref: '#/definitions/system.SysBaseMenuBtn'
         type: array
       menuId:
-        type: string
+        type: integer
       meta:
         allOf:
         - $ref: '#/definitions/system.Meta'
@@ -1470,7 +1762,7 @@ definitions:
         type: array
       parentId:
         description: 父菜单ID
-        type: string
+        type: integer
       path:
         description: 路由path
         type: string
@@ -3279,6 +3571,750 @@ paths:
       summary: 更新菜单
       tags:
       - Menu
+  /my_goods/createMy_goods:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 创建商品信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/mySys.My_goods'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"创建成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 创建商品信息
+      tags:
+      - My_goods
+  /my_goods/deleteMy_goods:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: 删除商品信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/mySys.My_goods'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"删除成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 删除商品信息
+      tags:
+      - My_goods
+  /my_goods/deleteMy_goodsByIds:
+    delete:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"批量删除成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 批量删除商品信息
+      tags:
+      - My_goods
+  /my_goods/findMy_goods:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 主键ID
+        in: query
+        name: ID
+        type: integer
+      - description: 创建时间
+        in: query
+        name: createdAt
+        type: string
+      - in: query
+        name: createdBy
+        type: integer
+      - in: query
+        name: deletedBy
+        type: integer
+      - description: 商品名
+        in: query
+        name: goodsName
+        required: true
+        type: string
+      - description: 商品库存
+        in: query
+        name: goodsNum
+        type: integer
+      - description: 商品价格
+        in: query
+        name: goodsPrice
+        required: true
+        type: number
+      - description: 商品类型
+        in: query
+        name: goodsType
+        required: true
+        type: string
+      - description: 商品单位
+        in: query
+        name: goodsUnit
+        required: true
+        type: string
+      - description: 商品供货商
+        in: query
+        name: goodsVender
+        required: true
+        type: string
+      - description: 更新时间
+        in: query
+        name: updatedAt
+        type: string
+      - in: query
+        name: updatedBy
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"查询成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 用id查询商品信息
+      tags:
+      - My_goods
+  /my_goods/getMy_goodsList:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - in: query
+        name: endCreatedAt
+        type: string
+      - in: query
+        name: goodsName
+        type: string
+      - in: query
+        name: goodsType
+        type: string
+      - description: 关键字
+        in: query
+        name: keyword
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页大小
+        in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: startCreatedAt
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"获取成功"}'
+          schema:
+            type: string
+      summary: 不需要鉴权的商品信息接口
+      tags:
+      - My_goods
+  /my_goods/updateMy_goods:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: 更新商品信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/mySys.My_goods'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"更新成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 更新商品信息
+      tags:
+      - My_goods
+  /my_goodsType/GetMy_goodsTypePublic:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - in: query
+        name: endCreatedAt
+        type: string
+      - description: 关键字
+        in: query
+        name: keyword
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页大小
+        in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: startCreatedAt
+        type: string
+      - in: query
+        name: typeName
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"获取成功"}'
+          schema:
+            type: string
+      summary: 不需要鉴权的商品类型接口
+      tags:
+      - My_goodsType
+  /my_goodsType/createMy_goodsType:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 创建商品类型
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/mySys.My_goodsType'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"创建成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 创建商品类型
+      tags:
+      - My_goodsType
+  /my_goodsType/deleteMy_goodsType:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: 删除商品类型
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/mySys.My_goodsType'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"删除成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 删除商品类型
+      tags:
+      - My_goodsType
+  /my_goodsType/deleteMy_goodsTypeByIds:
+    delete:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"批量删除成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 批量删除商品类型
+      tags:
+      - My_goodsType
+  /my_goodsType/findMy_goodsType:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 主键ID
+        in: query
+        name: ID
+        type: integer
+      - description: 创建时间
+        in: query
+        name: createdAt
+        type: string
+      - in: query
+        name: createdBy
+        type: integer
+      - in: query
+        name: deletedBy
+        type: integer
+      - description: 商品名
+        in: query
+        name: typeName
+        required: true
+        type: string
+      - description: 更新时间
+        in: query
+        name: updatedAt
+        type: string
+      - in: query
+        name: updatedBy
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"查询成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 用id查询商品类型
+      tags:
+      - My_goodsType
+  /my_goodsType/getMy_goodsTypePublic:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - in: query
+        name: endCreatedAt
+        type: string
+      - description: 关键字
+        in: query
+        name: keyword
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页大小
+        in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: startCreatedAt
+        type: string
+      - in: query
+        name: typeName
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"获取成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 分页获取商品类型列表
+      tags:
+      - My_goodsType
+  /my_goodsType/updateMy_goodsType:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: 更新商品类型
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/mySys.My_goodsType'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"更新成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 更新商品类型
+      tags:
+      - My_goodsType
+  /my_goodsUnit/createMy_goodsUnit:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 创建计量单位
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/mySys.My_goodsUnit'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"创建成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 创建计量单位
+      tags:
+      - My_goodsUnit
+  /my_goodsUnit/deleteMy_goodsUnit:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: 删除计量单位
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/mySys.My_goodsUnit'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"删除成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 删除计量单位
+      tags:
+      - My_goodsUnit
+  /my_goodsUnit/deleteMy_goodsUnitByIds:
+    delete:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"批量删除成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 批量删除计量单位
+      tags:
+      - My_goodsUnit
+  /my_goodsUnit/findMy_goodsUnit:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 主键ID
+        in: query
+        name: ID
+        type: integer
+      - description: 创建时间
+        in: query
+        name: createdAt
+        type: string
+      - in: query
+        name: createdBy
+        type: integer
+      - in: query
+        name: deletedBy
+        type: integer
+      - description: 计量单位
+        in: query
+        name: unitName
+        required: true
+        type: string
+      - description: 更新时间
+        in: query
+        name: updatedAt
+        type: string
+      - in: query
+        name: updatedBy
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"查询成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 用id查询计量单位
+      tags:
+      - My_goodsUnit
+  /my_goodsUnit/getMy_goodsUnitList:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - in: query
+        name: endCreatedAt
+        type: string
+      - description: 关键字
+        in: query
+        name: keyword
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页大小
+        in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: startCreatedAt
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"获取成功"}'
+          schema:
+            type: string
+      summary: 不需要鉴权的计量单位接口
+      tags:
+      - My_goodsUnit
+  /my_goodsUnit/updateMy_goodsUnit:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: 更新计量单位
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/mySys.My_goodsUnit'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"更新成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 更新计量单位
+      tags:
+      - My_goodsUnit
+  /my_vendor/createMy_vendor:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 创建供货商管理
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/mySys.My_vendor'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"创建成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 创建供货商管理
+      tags:
+      - My_vendor
+  /my_vendor/deleteMy_vendor:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: 删除供货商管理
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/mySys.My_vendor'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"删除成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 删除供货商管理
+      tags:
+      - My_vendor
+  /my_vendor/deleteMy_vendorByIds:
+    delete:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"批量删除成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 批量删除供货商管理
+      tags:
+      - My_vendor
+  /my_vendor/findMy_vendor:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 主键ID
+        in: query
+        name: ID
+        type: integer
+      - description: 创建时间
+        in: query
+        name: createdAt
+        type: string
+      - in: query
+        name: createdBy
+        type: integer
+      - in: query
+        name: deletedBy
+        type: integer
+      - description: 负责人
+        in: query
+        name: header
+        required: true
+        type: string
+      - description: 更新时间
+        in: query
+        name: updatedAt
+        type: string
+      - in: query
+        name: updatedBy
+        type: integer
+      - description: 厂家地址
+        in: query
+        name: venderAddr
+        required: true
+        type: string
+      - description: 厂家类型
+        in: query
+        name: venderClass
+        required: true
+        type: string
+      - description: 厂家名
+        in: query
+        name: venderName
+        required: true
+        type: string
+      - description: 厂家电话
+        in: query
+        name: venderPhone
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"查询成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 用id查询供货商管理
+      tags:
+      - My_vendor
+  /my_vendor/getMy_vendorList:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - in: query
+        name: endCreatedAt
+        type: string
+      - in: query
+        name: header
+        type: string
+      - description: 关键字
+        in: query
+        name: keyword
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页大小
+        in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: startCreatedAt
+        type: string
+      - in: query
+        name: venderAddr
+        type: string
+      - in: query
+        name: venderName
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"获取成功"}'
+          schema:
+            type: string
+      summary: 不需要鉴权的供货商管理接口
+      tags:
+      - My_vendor
+  /my_vendor/updateMy_vendor:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: 更新供货商管理
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/mySys.My_vendor'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"更新成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 更新供货商管理
+      tags:
+      - My_vendor
   /sysDictionary/createSysDictionary:
     post:
       consumes:
@@ -3535,7 +4571,7 @@ paths:
       - description: 字典值
         in: query
         name: value
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -3608,7 +4644,7 @@ paths:
       - description: 字典值
         in: query
         name: value
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -3656,6 +4692,250 @@ paths:
       summary: 更新SysDictionaryDetail
       tags:
       - SysDictionaryDetail
+  /sysExportTemplate/createSysExportTemplate:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 创建导出模板
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/system.SysExportTemplate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"创建成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 创建导出模板
+      tags:
+      - SysExportTemplate
+  /sysExportTemplate/deleteSysExportTemplate:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: 删除导出模板
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/system.SysExportTemplate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"删除成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 删除导出模板
+      tags:
+      - SysExportTemplate
+  /sysExportTemplate/deleteSysExportTemplateByIds:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: 批量删除导出模板
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.IdsReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"批量删除成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 批量删除导出模板
+      tags:
+      - SysExportTemplate
+  /sysExportTemplate/exportExcel:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: 导出表格模板
+      tags:
+      - SysExportTemplate
+  /sysExportTemplate/findSysExportTemplate:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 主键ID
+        in: query
+        name: ID
+        type: integer
+      - description: 创建时间
+        in: query
+        name: createdAt
+        type: string
+      - description: 数据库名称
+        in: query
+        name: dbName
+        type: string
+      - in: query
+        name: limit
+        type: integer
+      - description: 模板名称
+        in: query
+        name: name
+        type: string
+      - in: query
+        name: order
+        type: string
+      - description: 表名称
+        in: query
+        name: tableName
+        type: string
+      - description: 模板标识
+        in: query
+        name: templateID
+        type: string
+      - description: 模板信息
+        in: query
+        name: templateInfo
+        type: string
+      - description: 更新时间
+        in: query
+        name: updatedAt
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"查询成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 用id查询导出模板
+      tags:
+      - SysExportTemplate
+  /sysExportTemplate/getSysExportTemplateList:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 主键ID
+        in: query
+        name: ID
+        type: integer
+      - description: 创建时间
+        in: query
+        name: createdAt
+        type: string
+      - description: 数据库名称
+        in: query
+        name: dbName
+        type: string
+      - in: query
+        name: endCreatedAt
+        type: string
+      - description: 关键字
+        in: query
+        name: keyword
+        type: string
+      - in: query
+        name: limit
+        type: integer
+      - description: 模板名称
+        in: query
+        name: name
+        type: string
+      - in: query
+        name: order
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页大小
+        in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: startCreatedAt
+        type: string
+      - description: 表名称
+        in: query
+        name: tableName
+        type: string
+      - description: 模板标识
+        in: query
+        name: templateID
+        type: string
+      - description: 模板信息
+        in: query
+        name: templateInfo
+        type: string
+      - description: 更新时间
+        in: query
+        name: updatedAt
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"获取成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 分页获取导出模板列表
+      tags:
+      - SysExportTemplate
+  /sysExportTemplate/importExcel:
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: 导入表格
+      tags:
+      - SysImportTemplate
+  /sysExportTemplate/updateSysExportTemplate:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: 更新导出模板
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/system.SysExportTemplate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"更新成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 更新导出模板
+      tags:
+      - SysExportTemplate
   /sysOperationRecord/createSysOperationRecord:
     post:
       consumes:
@@ -4271,6 +5551,362 @@ paths:
       summary: 设置用户信息
       tags:
       - SysUser
+  /wareHouse/createWareHouse:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 创建仓库
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/mySys.WareHouse'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"创建成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 创建仓库
+      tags:
+      - WareHouse
+  /wareHouse/deleteWareHouse:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: 删除仓库
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/mySys.WareHouse'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"删除成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 删除仓库
+      tags:
+      - WareHouse
+  /wareHouse/deleteWareHouseByIds:
+    delete:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"批量删除成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 批量删除仓库
+      tags:
+      - WareHouse
+  /wareHouse/findWareHouse:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 主键ID
+        in: query
+        name: ID
+        type: integer
+      - description: 创建时间
+        in: query
+        name: createdAt
+        type: string
+      - in: query
+        name: createdBy
+        type: integer
+      - in: query
+        name: deletedBy
+        type: integer
+      - description: 更新时间
+        in: query
+        name: updatedAt
+        type: string
+      - in: query
+        name: updatedBy
+        type: integer
+      - description: 仓库名字
+        in: query
+        name: wareHouseName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"查询成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 用id查询仓库
+      tags:
+      - WareHouse
+  /wareHouse/getWareHouseList:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - in: query
+        name: endCreatedAt
+        type: string
+      - description: 关键字
+        in: query
+        name: keyword
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页大小
+        in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: startCreatedAt
+        type: string
+      - in: query
+        name: wareHouseName
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"获取成功"}'
+          schema:
+            type: string
+      summary: 不需要鉴权的仓库接口
+      tags:
+      - WareHouse
+  /wareHouse/updateWareHouse:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: 更新仓库
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/mySys.WareHouse'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"更新成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 更新仓库
+      tags:
+      - WareHouse
+  /wareHouseInfo/createWareHouseInfo:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 创建仓库信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/mySys.WareHouseInfo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"创建成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 创建仓库信息
+      tags:
+      - WareHouseInfo
+  /wareHouseInfo/deleteWareHouseInfo:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: 删除仓库信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/mySys.WareHouseInfo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"删除成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 删除仓库信息
+      tags:
+      - WareHouseInfo
+  /wareHouseInfo/deleteWareHouseInfoByIds:
+    delete:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"批量删除成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 批量删除仓库信息
+      tags:
+      - WareHouseInfo
+  /wareHouseInfo/findWareHouseInfo:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 主键ID
+        in: query
+        name: ID
+        type: integer
+      - description: 创建时间
+        in: query
+        name: createdAt
+        type: string
+      - in: query
+        name: createdBy
+        type: integer
+      - in: query
+        name: deletedBy
+        type: integer
+      - description: 商品ID
+        in: query
+        name: goodsID
+        required: true
+        type: integer
+      - description: 商品名字
+        in: query
+        name: goodsName
+        required: true
+        type: string
+      - description: 商品数量
+        in: query
+        name: num
+        required: true
+        type: integer
+      - description: 商品单价
+        in: query
+        name: price
+        required: true
+        type: number
+      - description: 更新时间
+        in: query
+        name: updatedAt
+        type: string
+      - in: query
+        name: updatedBy
+        type: integer
+      - description: 仓库ID
+        in: query
+        name: wareHouseID
+        required: true
+        type: integer
+      - description: 仓库名字
+        in: query
+        name: wareHouseName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"查询成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 用id查询仓库信息
+      tags:
+      - WareHouseInfo
+  /wareHouseInfo/getWareHouseInfoList:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - in: query
+        name: endCreatedAt
+        type: string
+      - in: query
+        name: goodsName
+        type: string
+      - description: 关键字
+        in: query
+        name: keyword
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页大小
+        in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: startCreatedAt
+        type: string
+      - in: query
+        name: wareHouseName
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"获取成功"}'
+          schema:
+            type: string
+      summary: 不需要鉴权的仓库信息接口
+      tags:
+      - WareHouseInfo
+  /wareHouseInfo/updateWareHouseInfo:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: 更新仓库信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/mySys.WareHouseInfo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"更新成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 更新仓库信息
+      tags:
+      - WareHouseInfo
 securityDefinitions:
   ApiKeyAuth:
     in: header
