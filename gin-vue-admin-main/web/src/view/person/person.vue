@@ -64,14 +64,14 @@
                     <el-icon>
                       <data-analysis />
                     </el-icon>
-                    北京反转极光科技有限公司-技术部-前端事业群
+                    haut
                   </li>
                 </el-tooltip>
                 <li class="info-list">
                   <el-icon>
                     <video-camera />
                   </el-icon>
-                  中国·北京市·朝阳区
+                  郑州
                 </li>
                 <el-tooltip
                   class="item"
@@ -124,7 +124,7 @@
                     >立即修改</a>
                   </p>
                 </li>
-                <li class="borderd pt-2.5">
+                <!-- <li class="borderd pt-2.5">
                   <p class="pb-2.5 text-xl text-gray-600">密保问题</p>
                   <p class="pb-2.5 text-lg text-gray-400">
                     未设置密保问题
@@ -133,7 +133,7 @@
                       class="float-right text-blue-400"
                     >去设置</a>
                   </p>
-                </li>
+                </li> -->
                 <li class="borderd pt-2.5">
                   <p class="pb-2.5 text-xl text-gray-600">修改密码</p>
                   <p class="pb-2.5 text-lg text-gray-400">
@@ -235,7 +235,7 @@
               v-model="phoneForm.code"
               class="flex-1"
               autocomplete="off"
-              placeholder="请自行设计短信服务，此处为模拟随便写"
+              placeholder="未接入短信服务"
               style="width:300px"
             />
             <el-button
@@ -285,7 +285,7 @@
             <el-input
               v-model="emailForm.code"
               class="flex-1"
-              placeholder="请自行设计邮件服务，此处为模拟随便写"
+              placeholder="未接入邮件服务"
               autocomplete="off"
               style="width:300px"
             />

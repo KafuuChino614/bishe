@@ -41,6 +41,7 @@
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link icon="edit" class="table-button" @click="updateWareHouseInfoFunc(scope.row)">出库</el-button>
+            <el-button type="primary" link icon="edit" class="table-button" @click="updateWareHouseInfoPriceFunc(scope.row)">修改价格</el-button>
             </template>
         </el-table-column>
         </el-table>
@@ -57,6 +58,28 @@
             />
         </div>
     </div>
+    <!-- ------------------------------------------修改价格----------------------------------------------- -->
+    <el-drawer size="800" v-model="dialogFormVisible_price" :show-close="false" :before-close="closeDialog">
+       <template #header>
+              <div class="flex justify-between items-center">
+                <span class="text-lg">修改价格</span>
+                <div>
+                  <el-button type="primary" @click="enterDialog">确 定</el-button>
+                  <el-button @click="closeDialog">取 消</el-button>
+                </div>
+              </div>
+            </template>
+
+          <el-form :model="formData_price" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
+            <el-form-item label="商品单价:"  prop="price" >
+              <el-input-number v-model="formData_price.price"  style="width:100%" :precision="2" :clearable="true" />
+            </el-form-item>
+
+          </el-form>
+    </el-drawer>
+    <!-- ------------------------------------------修改价格END!!!!----------------------------------------------- -->
+
+
     <!-- ------------------------------------------新增入库单----------------------------------------------- -->
     <el-drawer size="800" v-model="dialogFormVisible" :show-close="false" :before-close="closeDialog">
        <template #header>
@@ -86,10 +109,6 @@
             <el-form-item label="入库数量:"  prop="num" >
               <el-input v-model.number="formData.num" :clearable="true" />
             </el-form-item>
-            <el-form-item label="商品单价:"  prop="price" >
-              <el-input-number v-model="formData.price"  style="width:100%" :precision="2" :clearable="true"  disabled="true" />
-            </el-form-item>
-
           </el-form>
     </el-drawer>
       <!-- ------------------------------------------新增入库单 END!----------------------------------------------- -->
@@ -194,7 +213,15 @@ const formData_out = ref({
         goodsName: '',
         numAlow:'',//最大可出库数量
         })
-
+const formData_price = ref({
+        wareHouseID: '',
+        goodsID: '',
+        num: 0,
+        price: 0,
+        wareHouseName: '',
+        goodsName: '',
+        numAlow:'',//可入库数量
+        })
 // 验证规则
 const rule = reactive({
                wareHouseID : [{
@@ -374,12 +401,21 @@ const updateWareHouseInfoFunc = async(row) => {
         dialogFormVisible_out.value = true
     }
 }
-
+//更新价格
+// 更新行
+const updateWareHouseInfoPriceFunc = async(row) => {
+    const res = await findWareHouseInfo({ ID: row.ID })
+    type.value = 'updatePrice'
+    if (res.code === 0) {
+        formData_price.value = res.data.rewareHouseInfo
+        dialogFormVisible_price.value = true
+    }
+}
 
 // 弹窗控制标记
 const dialogFormVisible = ref(false)
 const dialogFormVisible_out = ref(false)
-
+const dialogFormVisible_price = ref(false)
 // 查看详情控制标记
 const detailShow = ref(false)
 
@@ -426,6 +462,7 @@ const openDialog = () => {
 const closeDialog = () => {
     dialogFormVisible.value = false
     dialogFormVisible_out.value = false
+    dialogFormVisible_price.value=false
     formData.value = {
         wareHouseID: '',
         goodsID: '',
@@ -444,6 +481,15 @@ const closeDialog = () => {
         wareHouseName: '',
         goodsName: '',
       }
+
+      formData_price.value = {
+        wareHouseID: '',
+        goodsID: '',
+        num: 0,
+        price: 0,
+        wareHouseName: '',
+        goodsName: '',
+        }
 
 }
 // 弹窗确定
@@ -480,10 +526,24 @@ const enterDialog = async () => {
                   formData_out.value.num=formData_out.value.numAlow-formData_out.value.num
                   res = await updateWareHouseInfo(formData_out.value)
                   break
+                case 'updatePrice':
+                  res = await updateWareHouseInfo(formData_price.value)
+                  break
                 default:
                   res = await createWareHouseInfo(formData.value)
                   break
               }
+              if(res.code === 0&&type.value=='updatePrice'){
+                ElMessage({
+                  type: 'success',
+                  message: '修改成功'
+                })
+                closeDialog()
+                setOptions()
+                getTableData()
+                return
+              }
+
               if(res.code === 0&&type.value=='update'){
                 ElMessage({
                   type: 'success',
