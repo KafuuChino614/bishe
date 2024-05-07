@@ -16,12 +16,26 @@
       <el-date-picker v-model="searchInfo.endCreatedAt" type="datetime" placeholder="结束日期" :disabled-date="time=> searchInfo.startCreatedAt ? time.getTime() < searchInfo.startCreatedAt.getTime() : false"></el-date-picker>
       </el-form-item>
       
+        <el-form-item label="订单编号" prop="uuid">
+         <el-input v-model="searchInfo.uuid" placeholder="搜索条件" />
+
+        </el-form-item>
+        <el-form-item label="客户姓名" prop="customer">
+         <el-input v-model="searchInfo.customer" placeholder="搜索条件" />
+
+        </el-form-item>
         <el-form-item label="商品名" prop="goodsName">
          <el-input v-model="searchInfo.goodsName" placeholder="搜索条件" />
 
         </el-form-item>
-        <el-form-item label="商品类型" prop="goodsType">
-         <el-input v-model="searchInfo.goodsType" placeholder="搜索条件" />
+        <el-form-item label="商品价格" prop="goodsPrice">
+            
+             <el-input v-model.number="searchInfo.goodsPrice" placeholder="搜索条件" />
+
+        </el-form-item>
+        <el-form-item label="折扣" prop="discount">
+            
+             <el-input v-model.number="searchInfo.discount" placeholder="搜索条件" />
 
         </el-form-item>
         <el-form-item>
@@ -49,19 +63,20 @@
             <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
         </el-table-column>
         
+        <el-table-column align="left" label="订单编号" prop="uuid" width="120" />
+        <el-table-column align="left" label="客户姓名" prop="customer" width="120" />
         <el-table-column align="left" label="商品名" prop="goodsName" width="120" />
-        <el-table-column align="left" label="商品类型" prop="goodsType" width="120" />
-        <el-table-column align="left" label="商品单位" prop="goodsUnit" width="120" />
-        <el-table-column align="left" label="商品进价" prop="goodsPrice" width="120" />
-        <el-table-column align="left" label="商品库存" prop="goodsNum" width="120" />
-        <el-table-column align="left" label="商品供货商" prop="goodsVender" width="120" />
+        <el-table-column align="left" label="商品数量" prop="goodsNum" width="120" />
+        <el-table-column align="left" label="商品价格" prop="goodsPrice" width="120" />
+        <el-table-column align="left" label="折扣" prop="discount" width="120" />
+        <el-table-column align="left" label="总价" prop="allPrice" width="120" />
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
                 <el-icon style="margin-right: 5px"><InfoFilled /></el-icon>
                 查看详情
             </el-button>
-            <el-button type="primary" link icon="edit" class="table-button" @click="updateMy_goodsFunc(scope.row)">变更</el-button>
+            <el-button type="primary" link icon="edit" class="table-button" @click="updateOrderFunc(scope.row)">变更</el-button>
             <el-button type="primary" link icon="delete" @click="deleteRow(scope.row)">删除</el-button>
             </template>
         </el-table-column>
@@ -90,32 +105,26 @@
             </template>
 
           <el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
+            <el-form-item label="订单编号:"  prop="uuid" >
+              <el-input v-model="formData.uuid" :clearable="true"  placeholder="请输入订单编号" />
+            </el-form-item>
+            <el-form-item label="客户姓名:"  prop="customer" >
+              <el-input v-model="formData.customer" :clearable="true"  placeholder="请输入客户姓名" />
+            </el-form-item>
             <el-form-item label="商品名:"  prop="goodsName" >
               <el-input v-model="formData.goodsName" :clearable="true"  placeholder="请输入商品名" />
             </el-form-item>
-            <el-form-item label="商品类型:"  prop="goodsType" >
-              <!-- --------------------------------------------------------------------------------------------- -->
-              <el-select v-model="formData.goodsType" placeholder="请选择商品类型" style="width:100%" :clearable="true" >
-                <el-option v-for="(item,key) in goodsTypeOptions" :key="key" :label="item" :value="item" />
-              </el-select>
+            <el-form-item label="商品数量:"  prop="goodsNum" >
+              <el-input v-model.number="formData.goodsNum" :clearable="true" placeholder="请输入商品数量" />
             </el-form-item>
-            <el-form-item label="商品单位:"  prop="goodsUnit" >
-              <!-- <el-input v-model="formData.goodsUnit" :clearable="true"  placeholder="请输入商品单位" /> -->
-              <el-select v-model="formData.goodsUnit" placeholder="请选择商品单位" style="width:100%" :clearable="true" >
-                <el-option v-for="(item,key) in goodsUnitOptions" :key="key" :label="item" :value="item" />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="商品进价:"  prop="goodsPrice" >
+            <el-form-item label="商品价格:"  prop="goodsPrice" >
               <el-input-number v-model="formData.goodsPrice"  style="width:100%" :precision="2" :clearable="true"  />
             </el-form-item>
-            <el-form-item label="商品库存:"  prop="goodsNum" >
-              <el-input v-model.number="formData.goodsNum" :clearable="true" placeholder="请输入商品库存" />
+            <el-form-item label="折扣:"  prop="discount" >
+              <el-input-number v-model="formData.discount"  style="width:100%" :precision="2" :clearable="true"  />
             </el-form-item>
-            <el-form-item label="商品供货商:"  prop="goodsVender" >
-              <!-- <el-input v-model="formData.goodsVender" :clearable="true"  placeholder="请输入商品供货商" /> -->
-              <el-select v-model="formData.goodsVender" placeholder="请选择供货商" style="width:100%" :clearable="true" >
-                <el-option v-for="(item,key) in goodsVenderOptions" :key="key" :label="item" :value="item" />
-              </el-select>
+            <el-form-item label="总价:"  prop="allPrice" >
+              <el-input-number v-model="formData.allPrice"  style="width:100%" :precision="2" :clearable="false"  />
             </el-form-item>
           </el-form>
     </el-drawer>
@@ -127,23 +136,26 @@
              </div>
          </template>
         <el-descriptions :column="1" border>
+                <el-descriptions-item label="订单编号">
+                        {{ formData.uuid }}
+                </el-descriptions-item>
+                <el-descriptions-item label="客户姓名">
+                        {{ formData.customer }}
+                </el-descriptions-item>
                 <el-descriptions-item label="商品名">
                         {{ formData.goodsName }}
                 </el-descriptions-item>
-                <el-descriptions-item label="商品类型">
-                        {{ formData.goodsType }}
-                </el-descriptions-item>
-                <el-descriptions-item label="商品单位">
-                        {{ formData.goodsUnit }}
+                <el-descriptions-item label="商品数量">
+                        {{ formData.goodsNum }}
                 </el-descriptions-item>
                 <el-descriptions-item label="商品价格">
                         {{ formData.goodsPrice }}
                 </el-descriptions-item>
-                <el-descriptions-item label="商品库存">
-                        {{ formData.goodsNum }}
+                <el-descriptions-item label="折扣">
+                        {{ formData.discount }}
                 </el-descriptions-item>
-                <el-descriptions-item label="商品供货商">
-                        {{ formData.goodsVender }}
+                <el-descriptions-item label="总价">
+                        {{ formData.allPrice }}
                 </el-descriptions-item>
         </el-descriptions>
     </el-drawer>
@@ -152,41 +164,13 @@
 
 <script setup>
 import {
-  createMy_goods,
-  deleteMy_goods,
-  deleteMy_goodsByIds,
-  updateMy_goods,
-  findMy_goods,
-  getMy_goodsList
-} from '@/api/mySys/my_goods'
-
-import {
-  createMy_goodsType,
-  deleteMy_goodsType,
-  deleteMy_goodsTypeByIds,
-  updateMy_goodsType,
-  findMy_goodsType,
-  getMy_goodsTypeList,
-  getMy_goodsTypePublic
-} from '@/api/mySys/my_goodsType'
-
-import {
-  createMy_goodsUnit,
-  deleteMy_goodsUnit,
-  deleteMy_goodsUnitByIds,
-  updateMy_goodsUnit,
-  findMy_goodsUnit,
-  getMy_goodsUnitList
-} from '@/api/mySys/my_goodsUnit'
-
-import {
-  createMy_vendor,
-  deleteMy_vendor,
-  deleteMy_vendorByIds,
-  updateMy_vendor,
-  findMy_vendor,
-  getMy_vendorList
-} from '@/api/mySys/my_vendor'
+  createOrder,
+  deleteOrder,
+  deleteOrderByIds,
+  updateOrder,
+  findOrder,
+  getOrderList
+} from '@/api/mySys/order'
 
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile } from '@/utils/format'
@@ -194,27 +178,37 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
 
 defineOptions({
-    name: 'My_goods'
+    name: 'Order'
 })
 
 // 自动化生成的字典（可能为空）以及字段
-
-
 const formData = ref({
+        uuid: '',
+        customer: '',
         goodsName: '',
-        goodsType: '',
-        goodsUnit: '',
-        goodsPrice: 0,
         goodsNum: 0,
-        goodsVender: '',
+        goodsPrice: 0,
+        discount: 0,
+        allPrice: 0,
         })
 
 
 // 验证规则
 const rule = reactive({
+               customer : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
+              ],
                goodsName : [{
                    required: true,
-                   message: '请输入商品名',
+                   message: '',
                    trigger: ['input','blur'],
                },
                {
@@ -223,44 +217,17 @@ const rule = reactive({
                    trigger: ['input', 'blur'],
               }
               ],
-               goodsType : [{
+               goodsNum : [{
                    required: true,
-                   message: '请选择商品类型',
+                   message: '',
                    trigger: ['input','blur'],
                },
-               {
-                   whitespace: true,
-                   message: '不能只输入空格',
-                   trigger: ['input', 'blur'],
-              }
-              ],
-               goodsUnit : [{
-                   required: true,
-                   message: '请选择商品单位',
-                   trigger: ['input','blur'],
-               },
-               {
-                   whitespace: true,
-                   message: '不能只输入空格',
-                   trigger: ['input', 'blur'],
-              }
               ],
                goodsPrice : [{
                    required: true,
-                   message: '请输入价格',
+                   message: '',
                    trigger: ['input','blur'],
                },
-              ],
-               goodsVender : [{
-                   required: true,
-                   message: '请选择供货商',
-                   trigger: ['input','blur'],
-               },
-               {
-                   whitespace: true,
-                   message: '不能只输入空格',
-                   trigger: ['input', 'blur'],
-              }
               ],
 })
 
@@ -320,7 +287,7 @@ const handleCurrentChange = (val) => {
 
 // 查询
 const getTableData = async() => {
-  const table = await getMy_goodsList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
+  const table = await getOrderList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
   if (table.code === 0) {
     tableData.value = table.data.list
     total.value = table.data.total
@@ -332,30 +299,14 @@ const getTableData = async() => {
 getTableData()
 
 // ============== 表格控制部分结束 ===============
-var goodsTypeOptions = []
-var goodsUnitOptions = []
-var goodsVenderOptions=[]
+
 // 获取需要的字典 可能为空 按需保留
 const setOptions = async () =>{
-  var tmp=ref([])
-  var tmp1=ref([])
-  var tmp2=ref([])
-  tmp.value = await (await getMy_goodsTypeList()).data.list
-  tmp1.value=await (await getMy_goodsUnitList()).data.list
-  tmp2.value=await (await getMy_vendorList()).data.list
-  for(var i=0;i<tmp.value.length;i++){
-    goodsTypeOptions.push(tmp.value[i].typeName)
-  }
-  for(var i=0;i<tmp1.value.length;i++){
-    goodsUnitOptions.push(tmp1.value[i].unitName)
-  }
-  for(var i=0;i<tmp2.value.length;i++){
-    goodsVenderOptions.push(tmp2.value[i].venderName)
-  }
 }
 
 // 获取需要的字典 可能为空 按需保留
 setOptions()
+
 
 // 多选数据
 const multipleSelection = ref([])
@@ -371,7 +322,7 @@ const deleteRow = (row) => {
         cancelButtonText: '取消',
         type: 'warning'
     }).then(() => {
-            deleteMy_goodsFunc(row)
+            deleteOrderFunc(row)
         })
     }
 
@@ -394,7 +345,7 @@ const onDelete = async() => {
         multipleSelection.value.map(item => {
           IDs.push(item.ID)
         })
-      const res = await deleteMy_goodsByIds({ IDs })
+      const res = await deleteOrderByIds({ IDs })
       if (res.code === 0) {
         ElMessage({
           type: 'success',
@@ -412,19 +363,19 @@ const onDelete = async() => {
 const type = ref('')
 
 // 更新行
-const updateMy_goodsFunc = async(row) => {
-    const res = await findMy_goods({ ID: row.ID })
+const updateOrderFunc = async(row) => {
+    const res = await findOrder({ ID: row.ID })
     type.value = 'update'
     if (res.code === 0) {
-        formData.value = res.data.remy_goods
+        formData.value = res.data.reorder
         dialogFormVisible.value = true
     }
 }
 
 
 // 删除行
-const deleteMy_goodsFunc = async (row) => {
-    const res = await deleteMy_goods({ ID: row.ID })
+const deleteOrderFunc = async (row) => {
+    const res = await deleteOrder({ ID: row.ID })
     if (res.code === 0) {
         ElMessage({
                 type: 'success',
@@ -454,9 +405,9 @@ const openDetailShow = () => {
 // 打开详情
 const getDetails = async (row) => {
   // 打开弹窗
-  const res = await findMy_goods({ ID: row.ID })
+  const res = await findOrder({ ID: row.ID })
   if (res.code === 0) {
-    formData.value = res.data.remy_goods
+    formData.value = res.data.reorder
     openDetailShow()
   }
 }
@@ -466,12 +417,13 @@ const getDetails = async (row) => {
 const closeDetailShow = () => {
   detailShow.value = false
   formData.value = {
+          uuid: '',
+          customer: '',
           goodsName: '',
-          goodsType: '',
-          goodsUnit: '',
-          goodsPrice: 0,
           goodsNum: 0,
-          goodsVender: '',
+          goodsPrice: 0,
+          discount: 0,
+          allPrice: 0,
           }
 }
 
@@ -486,12 +438,13 @@ const openDialog = () => {
 const closeDialog = () => {
     dialogFormVisible.value = false
     formData.value = {
+        uuid: '',
+        customer: '',
         goodsName: '',
-        goodsType: '',
-        goodsUnit: '',
-        goodsPrice: 0,
         goodsNum: 0,
-        goodsVender: '',
+        goodsPrice: 0,
+        discount: 0,
+        allPrice: 0,
         }
 }
 // 弹窗确定
@@ -501,13 +454,13 @@ const enterDialog = async () => {
               let res
               switch (type.value) {
                 case 'create':
-                  res = await createMy_goods(formData.value)
+                  res = await createOrder(formData.value)
                   break
                 case 'update':
-                  res = await updateMy_goods(formData.value)
+                  res = await updateOrder(formData.value)
                   break
                 default:
-                  res = await createMy_goods(formData.value)
+                  res = await createOrder(formData.value)
                   break
               }
               if (res.code === 0) {

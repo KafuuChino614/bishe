@@ -36,7 +36,7 @@
         <el-table-column align="left" label="仓库名" prop="wareHouseName" width="350" />
         <el-table-column align="left" label="商品名" prop="goodsName" width="350" />
         <el-table-column align="left" label="商品数量" prop="num" width="350" />
-        <el-table-column align="left" label="商品单价" prop="price" width="350" />
+        <el-table-column align="left" label="商品单价（预计售价）" prop="price" width="350" />
         <el-table-column align="left" label="商品总价" prop="priceAll" width="350" />
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
@@ -147,7 +147,23 @@
             <el-form-item label="商品单价:"  prop="price" >
               <el-input-number v-model="formData_out.price"  style="width:100%" :precision="2" :clearable="true"  disabled="true" />
             </el-form-item>
-
+            <!-- TODO -->
+            <!-- 客户姓名 从后台传过来的数据选择 -->
+            <el-form-item label="客户姓名:"  prop="customer" >
+              <el-select v-model="formData_order.customer" placeholder="请选择客户" style="width:100%" :clearable="true">
+                <el-option v-for="(item,key) in customerNameOptions" :value="item.name" :key="key" :label="item.name" />
+              </el-select>
+            </el-form-item>
+            <!-- 折扣 -->
+            <el-form-item label="折扣:"  prop="discount" >
+              <el-select v-model="formData_order.discount" placeholder="请选择折扣" style="width:100%" :clearable="true"  @change="changeDiscount">
+                <el-option v-for="(item,key) in DiscountOptions" :key="key" :label="item.label" :value="item.value" />
+              </el-select>
+            </el-form-item>
+            <!-- 出库商品总价 -->
+            <el-form-item label="出库商品总价:"  prop="allPrice" >
+              <el-input-number v-model="formData_order.allPrice"  style="width:100%" :precision="2" :clearable="false" disabled="true" />
+            </el-form-item>
           </el-form>
     </el-drawer>
 <!-- ------------------------------------------新增出库单------END!!!!!!!----------------------------------------- -->
@@ -181,11 +197,19 @@ import {
   findWareHouse,
   getWareHouseList
 } from '@/api/mySys/wareHouse'
-
+import {
+  createCustomer,
+  deleteCustomer,
+  deleteCustomerByIds,
+  updateCustomer,
+  findCustomer,
+  getCustomerList
+} from '@/api/mySys/customer'
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
+
 
 defineOptions({
     name: 'WareHouseInfo'
@@ -195,6 +219,7 @@ defineOptions({
 
 
 // 自动化生成的字典（可能为空）以及字段
+const DiscountOptions = ref([])
 const formData = ref({
         wareHouseID: '',
         goodsID: '',
@@ -221,6 +246,18 @@ const formData_price = ref({
         wareHouseName: '',
         goodsName: '',
         numAlow:'',//可入库数量
+        })
+
+const formData_order = ref({
+        uuid: '',
+        customer: '',
+        wareHouseName: '',
+        goodsName: '',
+        goodsType: '',
+        goodsNum: 0,
+        goodsPrice:0,
+        discount:'',
+        allPrice:0,
         })
 // 验证规则
 const rule = reactive({
@@ -261,6 +298,28 @@ const rule = reactive({
               }
               ],
                goodsName : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
+              ],
+              customer : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
+              ],
+              discount : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -348,20 +407,26 @@ getTableData()
 // ============== 表格控制部分结束 ===============
 var goodsNameOptions=[]
 var wareHouseNameOptions=[]
-
+var customerNameOptions=[]  //客户名选项
 // 获取需要的字典 可能为空 按需保留
 const setOptions = async () =>{
+  var tmp0=ref([])
   var tmp=ref([])
   var tmp1=ref([])
+  tmp0.value=await (await getCustomerList()).data.list
   tmp.value = await (await getWareHouseList()).data.list
   tmp1.value=await(await getMy_goodsList()).data.list
+   //获取所有客户
+   for(var i=0;i<tmp0.value.length;i++){
+    customerNameOptions.push(tmp0.value[i])
+  }
   for(var i=0;i<tmp.value.length;i++){
     wareHouseNameOptions.push(tmp.value[i])
   }
   for(var i=0;i<tmp1.value.length;i++){
     goodsNameOptions.push(tmp1.value[i])
   }
-  
+  DiscountOptions.value = await getDictFunc('Discount')
 }
 // 获取需要的字典 可能为空 按需保留
 setOptions()
@@ -387,7 +452,7 @@ const changeGoods = async () =>{
 // 行为控制标记（弹窗内部需要增还是改）
 const type = ref('')
 
-//TODO
+
 // 更新行  (出库操作)
 var num_out  //用来记录查询到的商品数量
 const updateWareHouseInfoFunc = async(row) => {
@@ -490,6 +555,17 @@ const closeDialog = () => {
         wareHouseName: '',
         goodsName: '',
         }
+        formData_order.value={
+        uuid: '',
+        customer: '',
+        wareHouseName: '',
+        goodsName: '',
+        goodsType: '',
+        goodsNum: 0,
+        goodsPrice:0,
+        discount:'',
+        allPrice:0,
+        }
 
 }
 // 弹窗确定
@@ -523,8 +599,11 @@ const enterDialog = async () => {
                   res = await createWareHouseInfo(formData.value)
                   break
                 case 'update':
+                  //出库商品  减少库存中商品的数量  
                   formData_out.value.num=formData_out.value.numAlow-formData_out.value.num
                   res = await updateWareHouseInfo(formData_out.value)
+                  //TODO 封装数据到 formData_order  自动生成一个订单 
+                  
                   break
                 case 'updatePrice':
                   res = await updateWareHouseInfo(formData_price.value)

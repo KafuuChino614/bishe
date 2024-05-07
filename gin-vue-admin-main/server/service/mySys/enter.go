@@ -7,4 +7,6 @@ type ServiceGroup struct {
 	My_goodsService
 	WareHouseService
 	WareHouseInfoService
+	CustomerService
+	OrderService
 }

@@ -44,22 +44,25 @@
             </el-col>
           </el-row>
           <div>
-            <div class="gva-top-card-left-item">
+
+            <!-- <div class="gva-top-card-left-item">
               使用教学：
               <a
                 style="color:#409EFF"
                 target="view_window"
                 href="https://www.bilibili.com/video/BV1Rg411u7xH/"
               >https://www.bilibili.com/video/BV1Rg411u7xH</a>
-            </div>
-            <div class="gva-top-card-left-item">
+            </div> -->
+
+            <!-- <div class="gva-top-card-left-item">
               插件仓库：
               <a
                 style="color:#409EFF"
                 target="view_window"
                 href="https://plugin.gin-vue-admin.com/#/layout/home"
               >https://plugin.gin-vue-admin.com</a>
-            </div>
+            </div> -->
+
           </div>
         </div>
         <img
@@ -69,7 +72,8 @@
         >
       </div>
     </div>
-    <div class="gva-card-box">
+
+    <!-- <div class="gva-card-box">
       <div class="gva-card quick-entrance">
         <div class="gva-card-title">快捷入口</div>
         <el-row :gutter="20">
@@ -98,8 +102,9 @@
           </el-col>
         </el-row>
       </div>
-    </div>
-    <div class="gva-card-box">
+    </div> -->
+
+    <!-- <div class="gva-card-box">
       <div class="gva-card">
         <div class="gva-card-title">数据统计</div>
         <div class="p-4">
@@ -119,7 +124,7 @@
           </el-row>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 

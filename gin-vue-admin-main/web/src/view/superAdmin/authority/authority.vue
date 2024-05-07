@@ -43,20 +43,20 @@
               link
               @click="openDrawer(scope.row)"
             >设置权限</el-button>
-            <el-button
+            <!-- <el-button
               icon="plus"
 
               type="primary"
               link
               @click="addAuthority(scope.row.authorityId)"
-            >新增子角色</el-button>
-            <el-button
+            >新增子角色</el-button> -->
+            <!-- <el-button
               icon="copy-document"
 
               type="primary"
               link
               @click="copyAuthorityFunc(scope.row)"
-            >拷贝</el-button>
+            >拷贝</el-button> -->
             <el-button
               icon="edit"
 

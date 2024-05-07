@@ -151,6 +151,7 @@ func (b *BaseApi) Register(c *gin.Context) {
 	}
 	err = utils.Verify(r, utils.RegisterVerify)
 	if err != nil {
+
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
