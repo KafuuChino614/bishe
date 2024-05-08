@@ -86,9 +86,10 @@ func Routers() *gin.Engine {
 		mySysRouter.InitMy_goodsUnitRouter(PrivateGroup, PublicGroup)
 		mySysRouter.InitMy_goodsRouter(PrivateGroup, PublicGroup)
 		mySysRouter.InitWareHouseRouter(PrivateGroup, PublicGroup)
-		mySysRouter.InitWareHouseInfoRouter(PrivateGroup, PublicGroup)
+
 		mySysRouter.InitCustomerRouter(PrivateGroup, PublicGroup)
 		mySysRouter.InitOrderRouter(PrivateGroup, PublicGroup)
+		mySysRouter.InitWareHouseInfoRouter(PrivateGroup, PublicGroup)
 
 	}
 

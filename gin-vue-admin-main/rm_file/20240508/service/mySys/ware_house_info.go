@@ -112,9 +112,6 @@ func (wareHouseInfoService *WareHouseInfoService) GetWareHouseInfoInfoList(info 
 	if info.GoodsName != "" {
 		db = db.Where("goods_name = ?", info.GoodsName)
 	}
-	if info.GoodsType != "" {
-		db = db.Where("goods_type = ?", info.GoodsType)
-	}
 	err = db.Count(&total).Error
 	if err != nil {
 		return

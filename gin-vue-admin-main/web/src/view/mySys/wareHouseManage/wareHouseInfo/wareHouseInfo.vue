@@ -9,6 +9,9 @@
         </el-form-item>
         <el-form-item label="商品名字" prop="goodsName">
          <el-input v-model="searchInfo.goodsName" placeholder="搜索条件" />
+        </el-form-item>
+          <el-form-item label="商品类型" prop="goodsType">
+           <el-input v-model="searchInfo.goodsType" placeholder="搜索条件" />
 
         </el-form-item>
         <el-form-item>
@@ -33,11 +36,13 @@
         @selection-change="handleSelectionChange"
         >
 
-        <el-table-column align="left" label="仓库名" prop="wareHouseName" width="350" />
-        <el-table-column align="left" label="商品名" prop="goodsName" width="350" />
-        <el-table-column align="left" label="商品数量" prop="num" width="350" />
-        <el-table-column align="left" label="商品单价（预计售价）" prop="price" width="350" />
-        <el-table-column align="left" label="商品总价" prop="priceAll" width="350" />
+        <el-table-column align="left" label="仓库名" prop="wareHouseName" width="180" />
+        <el-table-column align="left" label="商品名" prop="goodsName" width="180" />
+        <el-table-column align="left" label="商品类型" prop="goodsType" width="180" />
+        <el-table-column align="left" label="计量单位" prop="goodsUnit" width="180" />
+        <el-table-column align="left" label="商品数量" prop="num" width="180" />
+        <el-table-column align="left" label="商品单价（预计售价）" prop="price" width="240" />
+        <el-table-column align="left" label="商品总价" prop="priceAll" width="180" />
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link icon="edit" class="table-button" @click="updateWareHouseInfoFunc(scope.row)">出库</el-button>
@@ -103,6 +108,12 @@
                 <el-option v-for="(item,key) in goodsNameOptions" :key="key" :label="item.goodsName" :value="item.ID" />
               </el-select>
             </el-form-item>
+            <el-form-item label="商品类型:"  prop="goodsType" >
+                <el-input v-model="formData.goodsType" :clearable="true"  placeholder="请输入商品类型" disabled="true"/>
+              </el-form-item>
+              <el-form-item label="计量单位:"  prop="goodsUnit" >
+                <el-input v-model="formData.goodsUnit" :clearable="true"  placeholder="请输入计量单位" disabled="true"/>
+              </el-form-item>
             <el-form-item label="最大可入库数量:">
               <el-input v-model.number="formData.numAlow" disabled="true"/>
             </el-form-item>
@@ -237,6 +248,8 @@ const formData = ref({
         price: 0,
         wareHouseName: '',
         goodsName: '',
+        goodsType:'',
+        goodsUnit:'',
         numAlow:'',//可入库数量
         })
 const formData_out = ref({
@@ -445,6 +458,8 @@ const changeGoods = async () =>{
       formData.value.goodsName=goodsNameOptions[i].goodsName
       formData.value.numAlow=goodsNameOptions[i].goodsNum
       formData.value.price=goodsNameOptions[i].goodsPrice
+      formData.value.goodsType=goodsNameOptions[i].goodsType
+      formData.value.goodsUnit=goodsNameOptions[i].goodsUnit
     }
   }
 
@@ -545,6 +560,8 @@ const closeDialog = () => {
         price: 0,
         wareHouseName: '',
         goodsName: '',
+        goodsType:'',
+        goodsUnit:'',
         }
 
 

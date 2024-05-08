@@ -6,7 +6,7 @@ type ApiGroup struct {
 	My_goodsUnitApi
 	My_goodsApi
 	WareHouseApi
-	WareHouseInfoApi
 	CustomerApi
 	OrderApi
+	WareHouseInfoApi
 }

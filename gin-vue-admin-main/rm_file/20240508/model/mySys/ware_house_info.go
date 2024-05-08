@@ -16,8 +16,6 @@ type WareHouseInfo struct {
       Price  *float64 `json:"price" form:"price" gorm:"default:0;column:price;comment:;" binding:"required"`  //商品单价 
       WareHouseName  string `json:"wareHouseName" form:"wareHouseName" gorm:"column:ware_house_name;comment:仓库名字;" binding:"required"`  //仓库名字 
       GoodsName  string `json:"goodsName" form:"goodsName" gorm:"column:goods_name;comment:商品名字;" binding:"required"`  //商品名字 
-      GoodsType  string `json:"goodsType" form:"goodsType" gorm:"column:goods_type;comment:商品类型;" binding:"required"`  //商品类型 
-      GoodsUnit  string `json:"goodsUnit" form:"goodsUnit" gorm:"column:goods_unit;comment:计量单位;"`  //计量单位 
       CreatedBy  uint   `gorm:"column:created_by;comment:创建者"`
       UpdatedBy  uint   `gorm:"column:updated_by;comment:更新者"`
       DeletedBy  uint   `gorm:"column:deleted_by;comment:删除者"`

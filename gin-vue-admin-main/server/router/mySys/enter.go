@@ -6,7 +6,7 @@ type RouterGroup struct {
 	My_goodsUnitRouter
 	My_goodsRouter
 	WareHouseRouter
-	WareHouseInfoRouter
 	CustomerRouter
 	OrderRouter
+	WareHouseInfoRouter
 }

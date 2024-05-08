@@ -13,6 +13,5 @@ type WareHouseInfoSearch struct{
     
                       WareHouseName  string `json:"wareHouseName" form:"wareHouseName" `
                       GoodsName  string `json:"goodsName" form:"goodsName" `
-                      GoodsType  string `json:"goodsType" form:"goodsType" `
     request.PageInfo
 }
