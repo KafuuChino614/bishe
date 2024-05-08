@@ -15,7 +15,6 @@ type Order struct {
       WareHouseName  string `json:"wareHouseName" form:"wareHouseName" gorm:"column:ware_house_name;comment:wareHouseName;" binding:"required"`  //仓库名 
       GoodsName  string `json:"goodsName" form:"goodsName" gorm:"column:goods_name;comment:商品名;" binding:"required"`  //商品名 
       GoodsType  string `json:"goodsType" form:"goodsType" gorm:"column:goods_type;comment:商品类型;" binding:"required"`  //商品类型 
-      GoodsUnit  string `json:"goodsUnit" form:"goodsUnit" gorm:"column:goods_unit;comment:商品类型;" binding:"required"`  //计量单位 
       GoodsNum  *int `json:"goodsNum" form:"goodsNum" gorm:"column:goods_num;comment:商品数量;" binding:"required"`  //商品数量 
       GoodsPrice  *float64 `json:"goodsPrice" form:"goodsPrice" gorm:"column:goods_price;comment:商品价格;" binding:"required"`  //商品价格 
       Discount  string `json:"discount" form:"discount" gorm:"column:discount;comment:折扣;" binding:"required"`  //折扣 

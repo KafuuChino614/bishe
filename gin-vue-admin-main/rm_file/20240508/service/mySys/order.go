@@ -88,9 +88,6 @@ func (orderService *OrderService)GetOrderInfoList(info mySysReq.OrderSearch) (li
     if info.GoodsType != "" {
         db = db.Where("goods_type = ?",info.GoodsType)
     }
-    if info.GoodsUnit != "" {
-        db = db.Where("goods_unit = ?",info.GoodsUnit)
-    }
     if info.GoodsPrice != nil {
         db = db.Where("goods_price = ?",info.GoodsPrice)
     }

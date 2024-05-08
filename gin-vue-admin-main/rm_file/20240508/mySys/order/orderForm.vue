@@ -17,9 +17,6 @@
         <el-form-item label="商品类型:" prop="goodsType">
           <el-input v-model="formData.goodsType" :clearable="true"  placeholder="请输入商品类型" />
        </el-form-item>
-        <el-form-item label="计量单位:" prop="goodsUnit">
-          <el-input v-model="formData.goodsUnit" :clearable="true"  placeholder="请输入计量单位" />
-       </el-form-item>
         <el-form-item label="商品数量:" prop="goodsNum">
           <el-input v-model.number="formData.goodsNum" :clearable="true" placeholder="请输入" />
        </el-form-item>
@@ -71,7 +68,6 @@ const formData = ref({
             wareHouseName: '',
             goodsName: '',
             goodsType: '',
-            goodsUnit: '',
             goodsNum: 0,
             goodsPrice: 0,
             discount: '',
@@ -95,11 +91,6 @@ const rule = reactive({
                    trigger: ['input','blur'],
                }],
                goodsType : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               }],
-               goodsUnit : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],

@@ -142,12 +142,14 @@
               <el-input v-model.number="formData_out.numAlow" disabled="true"/>
             </el-form-item>
             <el-form-item label="出库数量:"  prop="num" >
-              <el-input v-model.number="formData_out.num" :clearable="true" />
+              <el-input v-model.number="formData_out.num" :clearable="true"  @input="goodsNumInput"/>
             </el-form-item>
             <el-form-item label="商品单价:"  prop="price" >
               <el-input-number v-model="formData_out.price"  style="width:100%" :precision="2" :clearable="true"  disabled="true" />
             </el-form-item>
-            <!-- TODO -->
+          </el-form>
+          <el-form :model="formData_order" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
+          <!-- TODO -->
             <!-- 客户姓名 从后台传过来的数据选择 -->
             <el-form-item label="客户姓名:"  prop="customer" >
               <el-select v-model="formData_order.customer" placeholder="请选择客户" style="width:100%" :clearable="true">
@@ -205,6 +207,14 @@ import {
   findCustomer,
   getCustomerList
 } from '@/api/mySys/customer'
+import {
+  createOrder,
+  deleteOrder,
+  deleteOrderByIds,
+  updateOrder,
+  findOrder,
+  getOrderList
+} from '@/api/mySys/order'
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -254,9 +264,10 @@ const formData_order = ref({
         wareHouseName: '',
         goodsName: '',
         goodsType: '',
+        goodsUnit:'',
         goodsNum: 0,
         goodsPrice:0,
-        discount:'',
+        discount:'1',
         allPrice:0,
         })
 // 验证规则
@@ -308,27 +319,18 @@ const rule = reactive({
                    trigger: ['input', 'blur'],
               }
               ],
-              customer : [{
+
+               customer : [{
                    required: true,
-                   message: '',
+                   message: '请选择顾客',
                    trigger: ['input','blur'],
                },
-               {
-                   whitespace: true,
-                   message: '不能只输入空格',
-                   trigger: ['input', 'blur'],
-              }
               ],
               discount : [{
                    required: true,
-                   message: '',
+                   message: '请选择折扣',
                    trigger: ['input','blur'],
                },
-               {
-                   whitespace: true,
-                   message: '不能只输入空格',
-                   trigger: ['input', 'blur'],
-              }
               ],
 })
 
@@ -447,8 +449,16 @@ const changeGoods = async () =>{
   }
 
 }
+//改变数量 修改总价格
+const goodsNumInput = async () =>{
+  formData_order.value.allPrice=formData_out.value.price*formData_out.value.num*Number(formData_order.value.discount)
 
+}
+//改变折扣 修改总价格
+const changeDiscount = async () =>{
+  formData_order.value.allPrice=formData.value.goodsPrice*formData.value.goodsNum*Number(formData_order.value.discount)
 
+}
 // 行为控制标记（弹窗内部需要增还是改）
 const type = ref('')
 
@@ -561,9 +571,10 @@ const closeDialog = () => {
         wareHouseName: '',
         goodsName: '',
         goodsType: '',
+        goodsUnit: '',
         goodsNum: 0,
         goodsPrice:0,
-        discount:'',
+        discount:'1',
         allPrice:0,
         }
 
@@ -599,11 +610,27 @@ const enterDialog = async () => {
                   res = await createWareHouseInfo(formData.value)
                   break
                 case 'update':
-                  //出库商品  减少库存中商品的数量  
+                  //出库商品  减少库存中商品的数量 
+                  //封装formData_order数据 自动生成一个订单
+                  var goodsID=formData_out.value.goodsID
+                  var tmp=ref([])
+                  tmp.value = await (await getMy_goodsList()).data.list
+                  //根据商品id查询商品类型 和计量单位
+                  for(var i=0;i<tmp.value.length;i++){
+                     if(tmp.value[i].ID==goodsID){
+                      formData_order.value.goodsType=tmp.value[i].goodsType
+                      formData_order.value.goodsUnit=tmp.value[i].goodsUnit
+                      break
+                    }
+                  }
+                  formData_order.value.uuid=generateRandomString()
+                  formData_order.value.wareHouseName=formData_out.value.wareHouseName
+                  formData_order.value.goodsName=formData_out.value.goodsName
+                  formData_order.value.goodsNum=formData_out.value.num
+                  formData_order.value.goodsPrice=formData_out.value.price
                   formData_out.value.num=formData_out.value.numAlow-formData_out.value.num
                   res = await updateWareHouseInfo(formData_out.value)
-                  //TODO 封装数据到 formData_order  自动生成一个订单 
-                  
+                  await createOrder(formData_order.value)
                   break
                 case 'updatePrice':
                   res = await updateWareHouseInfo(formData_price.value)
@@ -645,6 +672,18 @@ const enterDialog = async () => {
               }
       })
 }
+//生成18位随机数
+function generateRandomString() {
+    let result = '';
+    const characters = '0123456789';
+    const charactersLength = characters.length;
+    for (let i = 0; i < 18; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
+
 
 </script>
 

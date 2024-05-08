@@ -16,7 +16,6 @@ type OrderSearch struct{
                       WareHouseName  string `json:"wareHouseName" form:"wareHouseName" `
                       GoodsName  string `json:"goodsName" form:"goodsName" `
                       GoodsType  string `json:"goodsType" form:"goodsType" `
-                      GoodsUnit  string `json:"goodsUnit" form:"goodsUnit" `
                       GoodsPrice  *float64 `json:"goodsPrice" form:"goodsPrice" `
                       Discount  string `json:"discount" form:"discount" `
     request.PageInfo

@@ -36,10 +36,6 @@
          <el-input v-model="searchInfo.goodsType" placeholder="搜索条件" />
 
         </el-form-item>
-        <el-form-item label="计量单位" prop="goodsUnit">
-         <el-input v-model="searchInfo.goodsUnit" placeholder="搜索条件" />
-
-        </el-form-item>
         <!-- <el-form-item label="商品价格" prop="goodsPrice">
             
              <el-input v-model.number="searchInfo.goodsPrice" placeholder="搜索条件" />
@@ -75,12 +71,11 @@
             <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
         </el-table-column>
         
-        <el-table-column align="left" label="订单编号" prop="uuid" width="120" />
+        <el-table-column align="left" label="订单编号" prop="uuid" width="180" />
         <el-table-column align="left" label="客户姓名" prop="customer" width="120" />
         <el-table-column align="left" label="仓库名" prop="wareHouseName" width="120" />
         <el-table-column align="left" label="商品名" prop="goodsName" width="120" />
         <el-table-column align="left" label="商品类型" prop="goodsType" width="120" />
-        <el-table-column align="left" label="计量单位" prop="goodsUnit" width="120" />
         <el-table-column align="left" label="商品数量" prop="goodsNum" width="120" />
         <el-table-column align="left" label="商品价格" prop="goodsPrice" width="120" />
         <el-table-column align="left" label="折扣" prop="discount" width="120">
@@ -113,63 +108,60 @@
         </div>
     </div>
     <el-drawer size="800" v-model="dialogFormVisible" :show-close="false" :before-close="closeDialog">
-         <template #header>
-                <div class="flex justify-between items-center">
-                  <span class="text-lg">{{type==='create'?'添加':'修改'}}</span>
-                  <div>
-                    <el-button type="primary" @click="enterDialog">确 定</el-button>
-                    <el-button @click="closeDialog">取 消</el-button>
-                  </div>
+       <template #header>
+              <div class="flex justify-between items-center">
+                <span class="text-lg">{{type==='create'?'添加':'修改'}}</span>
+                <div>
+                  <el-button type="primary" @click="enterDialog">确 定</el-button>
+                  <el-button @click="closeDialog">取 消</el-button>
                 </div>
-              </template>
-  
-            <el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
-              <!--订单编号 创建时自动生成 -->
-              <!-- <el-form-item label="订单编号:"  prop="uuid" >
-                <el-input v-model="formData.uuid" :clearable="true"  placeholder="请输入订单编号" />
-              </el-form-item> -->
-              <!-- 客户姓名 从后台传过来的数据选择 -->
-              <el-form-item label="客户姓名:"  prop="customer" >
-                <el-select v-model="formData.customer" placeholder="请选择客户" style="width:100%" :clearable="true">
-                  <el-option v-for="(item,key) in customerNameOptions" :value="item.name" :key="key" :label="item.name" />
-                </el-select>
-              </el-form-item>
-              <!-- 从warehouse里查看仓库  然后根据仓库名 查warehouseinfo表 选出里边的商品 商品类型 商品售价 进行预加载   --> 
-              <el-form-item label="仓库名:"  prop="wareHouseName" >
-                <el-select v-model="formData.wareHouseName" placeholder="请选择仓库" style="width:100%" :clearable="true" @change="changeWareHouse">
-                  <el-option v-for="(item,key) in wareHouseNameOptions" :value="item.wareHouseName" :key="key" :label="item.wareHouseName" />
-                </el-select>
-              </el-form-item>
-              <el-form-item label="商品名:"  prop="goodsName" >
-                <el-select v-model="formData.goodsName" placeholder="请选择商品" style="width:100%" :clearable="true" @change="changeGoodsName" >
-                  <el-option v-for="(item,key) in goodsList" :value="item.goodsName" :key="key" :label="item.goodsName" />
-                </el-select>
-              </el-form-item>
-              <el-form-item label="商品类型:"  prop="goodsType" >
-                <el-input v-model="formData.goodsType" :clearable="true"  placeholder="请输入商品类型" disabled="true"/>
-              </el-form-item>
-              <el-form-item label="计量单位:"  prop="goodsUnit" >
-              <el-input v-model="formData.goodsUnit" :clearable="true"  placeholder="请输入计量单位" disabled="true" />
+              </div>
+            </template>
+
+          <el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
+            <!--订单编号 创建时自动生成 -->
+            <!-- <el-form-item label="订单编号:"  prop="uuid" >
+              <el-input v-model="formData.uuid" :clearable="true"  placeholder="请输入订单编号" />
+            </el-form-item> -->
+            <!-- 客户姓名 从后台传过来的数据选择 -->
+            <el-form-item label="客户姓名:"  prop="customer" >
+              <el-select v-model="formData.customer" placeholder="请选择客户" style="width:100%" :clearable="true">
+                <el-option v-for="(item,key) in customerNameOptions" :value="item.name" :key="key" :label="item.name" />
+              </el-select>
             </el-form-item>
-              <el-form-item label="最大库存数量:">
-                <el-input v-model.number="formData.numAlow" disabled="true" />
-              </el-form-item>
-              <el-form-item label="商品数量:"  prop="goodsNum" >
-                <el-input v-model.number="formData.goodsNum" :clearable="true" placeholder="请输入商品数量" @input="goodsNumInput"/>
-              </el-form-item>
-              <el-form-item label="商品价格:"  prop="goodsPrice" >
-                <el-input-number v-model="formData.goodsPrice"  style="width:100%" :precision="2" :clearable="true"  disabled="true"/>
-              </el-form-item>
-              <el-form-item label="折扣:"  prop="discount" >
-                <el-select v-model="formData.discount" placeholder="请选择折扣" style="width:100%" :clearable="true"  @change="changeDiscount">
-                  <el-option v-for="(item,key) in DiscountOptions" :key="key" :label="item.label" :value="item.value" />
-                </el-select>
-              </el-form-item>
-              <el-form-item label="总价:"  prop="allPrice" >
-                <el-input-number v-model="formData.allPrice"  style="width:100%" :precision="2" :clearable="false" disabled="true" />
-              </el-form-item>
-            </el-form>
-      </el-drawer>
+            <!-- 从warehouse里查看仓库  然后根据仓库名 查warehouseinfo表 选出里边的商品 商品类型 商品售价 进行预加载   --> 
+            <el-form-item label="仓库名:"  prop="wareHouseName" >
+              <el-select v-model="formData.wareHouseName" placeholder="请选择仓库" style="width:100%" :clearable="true" @change="changeWareHouse">
+                <el-option v-for="(item,key) in wareHouseNameOptions" :value="item.wareHouseName" :key="key" :label="item.wareHouseName" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="商品名:"  prop="goodsName" >
+              <el-select v-model="formData.goodsName" placeholder="请选择商品" style="width:100%" :clearable="true" @change="changeGoodsName" >
+                <el-option v-for="(item,key) in goodsList" :value="item.goodsName" :key="key" :label="item.goodsName" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="商品类型:"  prop="goodsType" >
+              <el-input v-model="formData.goodsType" :clearable="true"  placeholder="请输入商品类型" disabled="true"/>
+            </el-form-item>
+            <el-form-item label="最大库存数量:">
+              <el-input v-model.number="formData.numAlow" disabled="true" />
+            </el-form-item>
+            <el-form-item label="商品数量:"  prop="goodsNum" >
+              <el-input v-model.number="formData.goodsNum" :clearable="true" placeholder="请输入商品数量" @input="goodsNumInput"/>
+            </el-form-item>
+            <el-form-item label="商品价格:"  prop="goodsPrice" >
+              <el-input-number v-model="formData.goodsPrice"  style="width:100%" :precision="2" :clearable="true"  disabled="true"/>
+            </el-form-item>
+            <el-form-item label="折扣:"  prop="discount" >
+              <el-select v-model="formData.discount" placeholder="请选择折扣" style="width:100%" :clearable="true"  @change="changeDiscount">
+                <el-option v-for="(item,key) in DiscountOptions" :key="key" :label="item.label" :value="item.value" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="总价:"  prop="allPrice" >
+              <el-input-number v-model="formData.allPrice"  style="width:100%" :precision="2" :clearable="false" disabled="true" />
+            </el-form-item>
+          </el-form>
+    </el-drawer>
 
     <el-drawer size="800" v-model="detailShow" :before-close="closeDetailShow" destroy-on-close>
           <template #header>
@@ -192,9 +184,6 @@
                 </el-descriptions-item>
                 <el-descriptions-item label="商品类型">
                         {{ formData.goodsType }}
-                </el-descriptions-item>
-                <el-descriptions-item label="计量单位">
-                        {{ formData.goodsUnit }}
                 </el-descriptions-item>
                 <el-descriptions-item label="商品数量">
                         {{ formData.goodsNum }}
@@ -223,41 +212,42 @@ import {
   getOrderList
 } from '@/api/mySys/order'
 import {
-    createMy_goods,
-    deleteMy_goods,
-    deleteMy_goodsByIds,
-    updateMy_goods,
-    findMy_goods,
-    getMy_goodsList
-  } from '@/api/mySys/my_goods'
-  import {
-    createWareHouseInfo,
-    deleteWareHouseInfo,
-    deleteWareHouseInfoByIds,
-    updateWareHouseInfo,
-    findWareHouseInfo,
-    getWareHouseInfoList
-  } from '@/api/mySys/wareHouseInfo'
-  import {
-    createCustomer,
-    deleteCustomer,
-    deleteCustomerByIds,
-    updateCustomer,
-    findCustomer,
-    getCustomerList
-  } from '@/api/mySys/customer'
-  import {
-    createWareHouse,
-    deleteWareHouse,
-    deleteWareHouseByIds,
-    updateWareHouse,
-    findWareHouse,
-    getWareHouseList
-  } from '@/api/mySys/wareHouse'
+  createMy_goods,
+  deleteMy_goods,
+  deleteMy_goodsByIds,
+  updateMy_goods,
+  findMy_goods,
+  getMy_goodsList
+} from '@/api/mySys/my_goods'
+import {
+  createWareHouseInfo,
+  deleteWareHouseInfo,
+  deleteWareHouseInfoByIds,
+  updateWareHouseInfo,
+  findWareHouseInfo,
+  getWareHouseInfoList
+} from '@/api/mySys/wareHouseInfo'
+import {
+  createCustomer,
+  deleteCustomer,
+  deleteCustomerByIds,
+  updateCustomer,
+  findCustomer,
+  getCustomerList
+} from '@/api/mySys/customer'
+import {
+  createWareHouse,
+  deleteWareHouse,
+  deleteWareHouseByIds,
+  updateWareHouse,
+  findWareHouse,
+  getWareHouseList
+} from '@/api/mySys/wareHouse'
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
+
 
 defineOptions({
     name: 'Order'
@@ -271,22 +261,22 @@ const formData = ref({
         wareHouseName: '',
         goodsName: '',
         goodsType: '',
-        goodsUnit: '',
         goodsNum: 0,
         goodsPrice: 0,
-        discount: '1',
+        discount: '',
         allPrice: 0,
         numAlow:'',
         })
 const formData_updateNum = ref({
-          ID:'',
-          wareHouseID: '',
-          goodsID: '',
-          num: 0,
-          price: 0,
-          wareHouseName: '',
-          goodsName: '',
-        })
+        ID:'',
+        wareHouseID: '',
+        goodsID: '',
+        num: 0,
+        price: 0,
+        wareHouseName: '',
+        goodsName: '',
+      })
+
 
 // 验证规则
 const rule = reactive({
@@ -324,17 +314,6 @@ const rule = reactive({
               }
               ],
                goodsType : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-               {
-                   whitespace: true,
-                   message: '不能只输入空格',
-                   trigger: ['input', 'blur'],
-              }
-              ],
-               goodsUnit : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -396,6 +375,7 @@ const pageSize = ref(10)
 const tableData = ref([])
 const searchInfo = ref({})
 
+
 // 重置
 const onReset = () => {
   searchInfo.value = {}
@@ -436,27 +416,30 @@ const getTableData = async() => {
 }
 
 getTableData()
-
+  
 // ============== 表格控制部分结束 ===============
 var customerNameOptions=[]  //客户名选项
 var wareHouseNameOptions=[]  //仓库选项
-
+var goodsNameOptions=[]  //商品名选项
 // 获取需要的字典 可能为空 按需保留
 const setOptions = async () =>{
-   var tmp0=ref([])
-    var tmp=ref([])
-    tmp0.value=await (await getCustomerList()).data.list
-    tmp.value = await (await getWareHouseList()).data.list
-    //获取所有客户
-    for(var i=0;i<tmp0.value.length;i++){
-      customerNameOptions.push(tmp0.value[i])
-    }
-    //获取所有仓库名
-    for(var i=0;i<tmp.value.length;i++){
-      wareHouseNameOptions.push(tmp.value[i])
-    }
-    DiscountOptions.value = await getDictFunc('Discount')
+  var tmp0=ref([])
+  var tmp=ref([])
+  tmp0.value=await (await getCustomerList()).data.list
+  tmp.value = await (await getWareHouseList()).data.list
+  //获取所有客户
+  for(var i=0;i<tmp0.value.length;i++){
+    customerNameOptions.push(tmp0.value[i])
+  }
+  //获取所有仓库名
+  for(var i=0;i<tmp.value.length;i++){
+    wareHouseNameOptions.push(tmp.value[i])
+  }
+
+  DiscountOptions.value = await getDictFunc('Discount')
 }
+
+
 const goodsList=ref([])//选中仓库中商品list
 // 根据选中的仓库做出一些操作:根据warehouseinfo查找出该库存里的商品信息
 const changeWareHouse = async () =>{
@@ -474,47 +457,51 @@ const changeWareHouse = async () =>{
   goodsList.value=tmp
   formData.value.goodsName=''
 }
-  // 根据选中的商品名做出一些操作:
-  const changeGoodsName = async () =>{
-    var goodsName=formData.value.goodsName
-    //遍历goodsList 根据名字比对
-    for(var i=0;i<goodsList.value.length;i++){
-      if(goodsName==goodsList.value[i].goodsName){
-        formData.value.numAlow=goodsList.value[i].num
-        formData.value.goodsPrice=goodsList.value[i].price
-        //封装formData_updataNum
-        formData_updateNum.value.ID=goodsList.value[i].ID
-        formData_updateNum.value.wareHouseID=goodsList.value[i].wareHouseID
-        formData_updateNum.value.goodsID=goodsList.value[i].goodsID
-        formData_updateNum.value.num=goodsList.value[i].num
-        formData_updateNum.value.price=goodsList.value[i].price
-        formData_updateNum.value.wareHouseName=goodsList.value[i].wareHouseName
-        formData_updateNum.value.goodsName=goodsList.value[i].goodsName
-        break
-      }
+
+// 根据选中的商品名做出一些操作:
+const changeGoodsName = async () =>{
+  var goodsName=formData.value.goodsName
+  //遍历goodsList 根据名字比对
+  for(var i=0;i<goodsList.value.length;i++){
+    if(goodsName==goodsList.value[i].goodsName){
+      formData.value.numAlow=goodsList.value[i].num
+      formData.value.goodsPrice=goodsList.value[i].price
+      //封装formData_updataNum
+      console.log("end!!!!!!!!!!!!!!!!!!!!!!!!!!")
+      console.log(goodsList.value[i])
+      formData_updateNum.value.ID=goodsList.value[i].ID
+      formData_updateNum.value.wareHouseID=goodsList.value[i].wareHouseID
+      formData_updateNum.value.goodsID=goodsList.value[i].goodsID
+      formData_updateNum.value.num=goodsList.value[i].num
+      formData_updateNum.value.price=goodsList.value[i].price
+      formData_updateNum.value.wareHouseName=goodsList.value[i].wareHouseName
+      formData_updateNum.value.goodsName=goodsList.value[i].goodsName
+      break
     }
-  
-    //根据商品名 查找其对应的商品类型 和计量单位
-    var tmplist=ref([])
-    tmplist.value=await (await getMy_goodsList()).data.list
-  
-    for(var i=0;i<tmplist.value.length;i++){
-      if(goodsName==tmplist.value[i].goodsName){
-        formData.value.goodsType=tmplist.value[i].goodsType
-        formData.value.goodsUnit=tmplist.value[i].goodsUnit
-        break
-      }
-    }
-  }
-  //改变折扣 修改总价格
-const changeDiscount = async () =>{
-    formData.value.allPrice=formData.value.goodsPrice*formData.value.goodsNum*Number(formData.value.discount)
   }
 
-  //改变数量 修改总价格
-  const goodsNumInput = async () =>{
-    formData.value.allPrice=formData.value.goodsPrice*formData.value.goodsNum*Number(formData.value.discount)
+  //根据商品名 查找其对应的商品类型
+  var tmplist=ref([])
+  tmplist.value=await (await getMy_goodsList()).data.list
+
+  for(var i=0;i<tmplist.value.length;i++){
+    if(goodsName==tmplist.value[i].goodsName){
+      formData.value.goodsType=tmplist.value[i].goodsType
+      break
+    }
   }
+}
+//改变折扣 修改总价格
+const changeDiscount = async () =>{
+  formData.value.allPrice=formData.value.goodsPrice*formData.value.goodsNum*Number(formData.value.discount)
+
+}
+
+//改变数量 修改总价格
+const goodsNumInput = async () =>{
+  formData.value.allPrice=formData.value.goodsPrice*formData.value.goodsNum*Number(formData.value.discount)
+
+}
 // 获取需要的字典 可能为空 按需保留
 setOptions()
 
@@ -633,22 +620,11 @@ const closeDetailShow = () => {
           wareHouseName: '',
           goodsName: '',
           goodsType: '',
-          goodsUnit: '',
           goodsNum: 0,
           goodsPrice: 0,
-          discount: '1',
+          discount: '',
           allPrice: 0,
-          numAlow:0,
           }
-    formData_updateNum.value = {
-          ID:'',
-          wareHouseID: '',
-          goodsID: '',
-          num: 0,
-          price: 0,
-          wareHouseName: '',
-          goodsName: '',
-        }
 }
 
 
@@ -662,46 +638,44 @@ const openDialog = () => {
 const closeDialog = () => {
     dialogFormVisible.value = false
     formData.value = {
-          uuid: '',
-          customer: '',
-          wareHouseName: '',
-          goodsName: '',
-          goodsType: '',
-          goodsUnit: '',
-          goodsNum: 0,
-          goodsPrice: 0,
-          discount: '1',
-          allPrice: 0,
-          numAlow:0,
-          }
-    formData_updateNum.value = {
-          ID:'',
-          wareHouseID: '',
-          goodsID: '',
-          num: 0,
-          price: 0,
-          wareHouseName: '',
-          goodsName: '',
+        uuid: '',
+        customer: '',
+        wareHouseName: '',
+        goodsName: '',
+        goodsType: '',
+        goodsNum: 0,
+        goodsPrice: 0,
+        discount: '',
+        allPrice: 0,
         }
+      formData_updateNum.value = {
+        ID:'',
+        wareHouseID: '',
+        goodsID: '',
+        num: 0,
+        price: 0,
+        wareHouseName: '',
+        goodsName: '',
+      }
 }
 // 弹窗确定
 const enterDialog = async () => {
    //数量范围校验
    if(formData.value.goodsNum>formData.value.numAlow||formData.value.goodsNum<0){
-                ElMessage({
-                    type:'error',
-                    message: '数量范围不合法，订单生成失败'
-                  })
-                  closeDialog()
-                  return
-      }
+              ElMessage({
+                  type:'error',
+                  message: '数量范围不合法，订单生成失败'
+                })
+                closeDialog()
+                return
+    }
      elFormRef.value?.validate( async (valid) => {
              if (!valid) return
               let res
               switch (type.value) {
                 case 'create':
-                 //生成18位字符串作为订单编号
-                 formData.value.uuid=generateRandomString()
+                  //生成18位字符串作为订单编号
+                  formData.value.uuid=generateRandomString()
                   //TODO 修改下库中商品的数量
                   formData_updateNum.value.num=formData_updateNum.value.num-formData.value.goodsNum
                   res = await createOrder(formData.value)
@@ -724,18 +698,16 @@ const enterDialog = async () => {
               }
       })
 }
-  //生成18位随机数
-  function generateRandomString() {
-      let result = '';
-      const characters = '0123456789';
-      const charactersLength = characters.length;
-      for (let i = 0; i < 18; i++) {
-          result += characters.charAt(Math.floor(Math.random() * charactersLength));
-      }
-      return result;
-  }
+//生成18位随机数
+function generateRandomString() {
+    let result = '';
+    const characters = '0123456789';
+    const charactersLength = characters.length;
+    for (let i = 0; i < 18; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
 </script>
 
-<style>
 
-</style>
