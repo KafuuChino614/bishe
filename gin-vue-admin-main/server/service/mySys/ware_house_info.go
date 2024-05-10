@@ -127,3 +127,9 @@ func (wareHouseInfoService *WareHouseInfoService) GetWareHouseInfoInfoList(info 
 	err = db.Find(&wareHouseInfos).Error
 	return wareHouseInfos, total, err
 }
+func (wareHouseInfoService *WareHouseInfoService) GetAllWareHouseInfo() (list []mySys.WareHouseInfo) {
+	// 创建db
+	db := global.GVA_DB.Model(&mySys.WareHouseInfo{})
+	db.Find(&list)
+	return list
+}

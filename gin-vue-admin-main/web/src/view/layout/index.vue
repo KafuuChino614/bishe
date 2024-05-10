@@ -80,7 +80,8 @@
                         <el-breadcrumb-item
                           v-for="item in matched.slice(1,matched.length)"
                           :key="item.path"
-                        >{{ fmtTitle(item.meta.title,route) }}</el-breadcrumb-item>
+                        >{{ fmtTitle(item.meta.title,route) }}
+                      </el-breadcrumb-item>
                       </el-breadcrumb>
                     </el-col>
                     <el-col

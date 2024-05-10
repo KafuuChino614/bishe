@@ -2,20 +2,19 @@ package mySys
 
 import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
-    "github.com/flipped-aurora/gin-vue-admin/server/model/mySys"
-    mySysReq "github.com/flipped-aurora/gin-vue-admin/server/model/mySys/request"
-    "github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
-    "github.com/flipped-aurora/gin-vue-admin/server/service"
-    "github.com/gin-gonic/gin"
-    "go.uber.org/zap"
-    "github.com/flipped-aurora/gin-vue-admin/server/utils"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/mySys"
+	mySysReq "github.com/flipped-aurora/gin-vue-admin/server/model/mySys/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/service"
+	"github.com/flipped-aurora/gin-vue-admin/server/utils"
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 type OrderApi struct {
 }
 
 var orderService = service.ServiceGroupApp.MySysServiceGroup.OrderService
-
 
 // CreateOrder 创建订单
 // @Tags Order
@@ -33,10 +32,10 @@ func (orderApi *OrderApi) CreateOrder(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-    order.CreatedBy = utils.GetUserID(c)
+	order.CreatedBy = utils.GetUserID(c)
 
 	if err := orderService.CreateOrder(&order); err != nil {
-        global.GVA_LOG.Error("创建失败!", zap.Error(err))
+		global.GVA_LOG.Error("创建失败!", zap.Error(err))
 		response.FailWithMessage("创建失败", c)
 	} else {
 		response.OkWithMessage("创建成功", c)
@@ -54,9 +53,9 @@ func (orderApi *OrderApi) CreateOrder(c *gin.Context) {
 // @Router /order/deleteOrder [delete]
 func (orderApi *OrderApi) DeleteOrder(c *gin.Context) {
 	ID := c.Query("ID")
-    	userID := utils.GetUserID(c)
-	if err := orderService.DeleteOrder(ID,userID); err != nil {
-        global.GVA_LOG.Error("删除失败!", zap.Error(err))
+	userID := utils.GetUserID(c)
+	if err := orderService.DeleteOrder(ID, userID); err != nil {
+		global.GVA_LOG.Error("删除失败!", zap.Error(err))
 		response.FailWithMessage("删除失败", c)
 	} else {
 		response.OkWithMessage("删除成功", c)
@@ -73,9 +72,9 @@ func (orderApi *OrderApi) DeleteOrder(c *gin.Context) {
 // @Router /order/deleteOrderByIds [delete]
 func (orderApi *OrderApi) DeleteOrderByIds(c *gin.Context) {
 	IDs := c.QueryArray("IDs[]")
-    userID := utils.GetUserID(c)
-	if err := orderService.DeleteOrderByIds(IDs,userID); err != nil {
-        global.GVA_LOG.Error("批量删除失败!", zap.Error(err))
+	userID := utils.GetUserID(c)
+	if err := orderService.DeleteOrderByIds(IDs, userID); err != nil {
+		global.GVA_LOG.Error("批量删除失败!", zap.Error(err))
 		response.FailWithMessage("批量删除失败", c)
 	} else {
 		response.OkWithMessage("批量删除成功", c)
@@ -98,10 +97,10 @@ func (orderApi *OrderApi) UpdateOrder(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-    order.UpdatedBy = utils.GetUserID(c)
+	order.UpdatedBy = utils.GetUserID(c)
 
 	if err := orderService.UpdateOrder(order); err != nil {
-        global.GVA_LOG.Error("更新失败!", zap.Error(err))
+		global.GVA_LOG.Error("更新失败!", zap.Error(err))
 		response.FailWithMessage("更新失败", c)
 	} else {
 		response.OkWithMessage("更新成功", c)
@@ -120,7 +119,7 @@ func (orderApi *OrderApi) UpdateOrder(c *gin.Context) {
 func (orderApi *OrderApi) FindOrder(c *gin.Context) {
 	ID := c.Query("ID")
 	if reorder, err := orderService.GetOrder(ID); err != nil {
-        global.GVA_LOG.Error("查询失败!", zap.Error(err))
+		global.GVA_LOG.Error("查询失败!", zap.Error(err))
 		response.FailWithMessage("查询失败", c)
 	} else {
 		response.OkWithData(gin.H{"reorder": reorder}, c)
@@ -144,16 +143,16 @@ func (orderApi *OrderApi) GetOrderList(c *gin.Context) {
 		return
 	}
 	if list, total, err := orderService.GetOrderInfoList(pageInfo); err != nil {
-	    global.GVA_LOG.Error("获取失败!", zap.Error(err))
-        response.FailWithMessage("获取失败", c)
-    } else {
-        response.OkWithDetailed(response.PageResult{
-            List:     list,
-            Total:    total,
-            Page:     pageInfo.Page,
-            PageSize: pageInfo.PageSize,
-        }, "获取成功", c)
-    }
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+	} else {
+		response.OkWithDetailed(response.PageResult{
+			List:     list,
+			Total:    total,
+			Page:     pageInfo.Page,
+			PageSize: pageInfo.PageSize,
+		}, "获取成功", c)
+	}
 }
 
 // GetOrderPublic 不需要鉴权的订单接口
@@ -165,9 +164,46 @@ func (orderApi *OrderApi) GetOrderList(c *gin.Context) {
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /order/getOrderList [get]
 func (orderApi *OrderApi) GetOrderPublic(c *gin.Context) {
-    // 此接口不需要鉴权
-    // 示例为返回了一个固定的消息接口，一般本接口用于C端服务，需要自己实现业务逻辑
-    response.OkWithDetailed(gin.H{
-       "info": "不需要鉴权的订单接口信息",
-    }, "获取成功", c)
+	// 此接口不需要鉴权
+	// 示例为返回了一个固定的消息接口，一般本接口用于C端服务，需要自己实现业务逻辑
+	day := [7]string{"星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"}
+	var pageInfo mySysReq.OrderSearch
+	list, _, _ := orderService.GetOrderInfoList(pageInfo)
+	// 初始化周销表数据结构
+	weeklySales := make(map[string]map[string]float64)
+
+	for _, order := range list {
+		// 确保订单创建时间非空
+		if !order.CreatedAt.IsZero() {
+			// 调试输出订单创建时间
+
+			// 获取订单创建时间所在的星期
+			dayIndex := int(order.CreatedAt.Weekday()) - 1 // 减去1以匹配数组索引
+			if dayIndex < 0 {
+				dayIndex += 7 // 修正为负索引
+			}
+			dayName := day[dayIndex]
+
+			// 根据商品类型统计销售量
+			typeName := order.GoodsType
+			if typeName != "" {
+				if weeklySales[typeName] == nil {
+					weeklySales[typeName] = make(map[string]float64)
+				}
+				// 解引用指针以获取销售额的值，然后再加到weeklySales中
+				if order.AllPrice != nil {
+					if _, ok := weeklySales[typeName][dayName]; !ok {
+						weeklySales[typeName][dayName] = *order.AllPrice
+					} else {
+						weeklySales[typeName][dayName] += *order.AllPrice
+					}
+				}
+			}
+		}
+	}
+
+	response.OkWithDetailed(gin.H{
+		"Day":         day,
+		"weeklySales": weeklySales,
+	}, "获取成功", c)
 }

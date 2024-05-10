@@ -95,3 +95,11 @@ export const getWareHouseInfoList = (params) => {
     params
   })
 }
+
+export const getWareHouseInfoPublic = (params) => {
+  return service({
+    url: 'http://localhost:8080/api/wareHouseInfo/getWareHouseInfoPublic',
+    method: 'get',
+    params
+  })
+}

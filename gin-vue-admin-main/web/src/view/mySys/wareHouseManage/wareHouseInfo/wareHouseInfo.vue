@@ -425,6 +425,9 @@ var wareHouseNameOptions=[]
 var customerNameOptions=[]  //客户名选项
 // 获取需要的字典 可能为空 按需保留
 const setOptions = async () =>{
+  goodsNameOptions=[]
+    wareHouseNameOptions=[]
+    customerNameOptions=[]
   var tmp0=ref([])
   var tmp=ref([])
   var tmp1=ref([])
@@ -553,6 +556,7 @@ const closeDialog = () => {
     dialogFormVisible.value = false
     dialogFormVisible_out.value = false
     dialogFormVisible_price.value=false
+
     formData.value = {
         wareHouseID: '',
         goodsID: '',

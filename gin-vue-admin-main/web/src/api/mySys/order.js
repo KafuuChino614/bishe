@@ -95,3 +95,11 @@ export const getOrderList = (params) => {
     params
   })
 }
+
+export const getetOrderPublic = (params) => {
+  return service({
+    url: 'http://localhost:8080/api/order/getOrderPublic',
+    method: 'get',
+    params
+  })
+}
