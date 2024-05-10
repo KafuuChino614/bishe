@@ -103,3 +103,11 @@ export const getetOrderPublic = (params) => {
     params
   })
 }
+
+export const getAllOrderProfitPublic = (params) => {
+  return service({
+    url: 'http://localhost:8080/api/order/getAllOrderProfitPublic',
+    method: 'get',
+    params
+  })
+}

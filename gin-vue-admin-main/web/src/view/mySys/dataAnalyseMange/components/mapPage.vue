@@ -1,96 +1,108 @@
 <template>
-  <div class="map" id="map"></div>
+  <div>
+    <h2 class="chart-title">利润分析</h2>
+    <div class="chart" ref="profitChart"></div>
+  </div>
 </template>
 
-<script>
-import axios from "axios";
-import { onMounted, reactive, inject } from "vue";
-export default {
-  setup() {
-    let $echarts = inject("echarts");
-    let mapData = reactive({});
-    async function getState() {
-      mapData = await axios.get("/china/data");
-    }
+<script setup>
+import { inject, onMounted, ref } from "vue";
+import { getAllOrderProfitPublic } from '@/api/mySys/order'
 
-    onMounted(() => {
-      console.log("aa",mapData)
-      getState().then(() => {
-        console.log("map", mapData);
-        $echarts.registerMap("china", mapData.data.chinaData);
-        let myChart = $echarts.init(document.getElementById("map"));
-        myChart.setOption({
-          geo: {
-            map: "china",
-            itemStyle: {
-              areaColor: "#0099ff",
-              borderColor: "#00ffff",
-              shadowColor: "rgba(230,130,70,0.5)",
-              shadowBlur: 30,
-              emphasis: {
-                focus: "self",
-              },
-            },
-          },
+const $echarts = inject("echarts");
+const profitChart = ref(null);
+const data = ref(null);
 
-          //   散点图数据
+async function getState() {
+  try {
+    data.value = (await getAllOrderProfitPublic()).data;
+    renderChart(data.value);
+  } catch (error) {
+    console.error("Error fetching profit data:", error);
+  }
+}
+onMounted(async () => {
+  await getState();
+});
 
-          tooltip:{
-              trigger:"item"
-          },
-          title:{
-              text:"城市销量",
-              left:"45%",
-              textStyle:{
-                  color:"#fff",
-                  fontSize:20,
-                  textShadowBlur:10,
-                  textShadowColor:"#33ffff"
-              }
-          },
-          visualMap:{
-              type:"continuous",
-              min:100,
-              max:5000,
-              calculable:true,
-              inRange:{
-                  color:["#50a3ba","#eac736","#d94e5d"],
-              },
-              textStyle:{
-                  color:"#fff"
-              }
-              
-          },
-          series: [
-            {
-              type: "scatter",
-              itemStyle: {
-                color: "red",
-              },
-              coordinateSystem:"geo",
-              data: [
-                { name: "北京", value: [116.46, 39.92, 4367] },
-                { name: "上海", value: [121.48, 31.22, 8675] },
-                { name: "深圳", value: [114.07, 22.62, 2461] },
-                { name: "广州", value: [113.23, 23.16, 187] },
-                { name: "西安", value: [108.45, 34, 3421] },
-              ],
-            },
-          ],
-        });
-      });
-    });
-    return {
-      getState,
-      mapData,
-    };
-  },
+const renderChart = (profitData) => {
+  const chart = $echarts.init(profitChart.value);
+
+  const xAxisData = []; // 存放商品类型的名称
+  const profitDataList = []; // 存放利润数据
+
+  // 遍历传入的利润数据，生成 x 轴和利润数据
+  for (const key in profitData.profitData) {
+    xAxisData.push(key); // 商品类型的名称
+    profitDataList.push(profitData.profitData[key]); // 利润数据
+  }
+
+  chart.setOption({
+    title: {
+      left: 'center',
+      textStyle: {
+        color: '#333', // 设置标题颜色
+        fontSize: 18, // 设置标题字体大小
+        fontWeight: 'bold' // 设置标题字体粗细
+      }
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    xAxis: {
+      type: 'category',
+      data: xAxisData,
+      axisLabel: {
+        rotate: 45, // 适当旋转标签，防止重叠
+        textStyle: {
+          color: '#333' // 设置标签字体颜色
+        }
+      },
+      axisLine: {
+        lineStyle: {
+          color: '#ccc' // 调整轴线颜色
+        }
+      }
+    },
+    yAxis: {
+      type: 'value',
+      name: '（单位：元）',
+      axisLabel: {
+        textStyle: {
+          color: ' #ff0' // 设置标签字体颜色
+        }
+      },
+      axisLine: {
+        lineStyle: {
+          color: '#ccc' // 调整轴线颜色
+        }
+      }
+    },
+    series: [
+      {
+        type: 'bar',
+        data: profitDataList,
+        itemStyle: {
+          color: ' #FFCC99' // 调整柱状图颜色
+        }
+      }
+    ]
+  });
 };
 </script>
 
 <style>
-.map {
-  width: 100%;
-  height: 100%;
+.chart-title {
+  height: 48px;
+  color:  #fff; /* 修改标题颜色 */
+  line-height: 48px;
+  font-size: 20px; /* 修改标题字体大小 */
+  text-align: center;
+}
+.chart {
+  height: 360px;
 }
 </style>

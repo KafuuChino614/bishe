@@ -1,6 +1,6 @@
 <template>
   <div>
-      <h2>库存商品类型统计</h2>
+      <h2>库存商品类型数量分析</h2>
       <div class="chart" id="myEcharts">
           图表的容器
       </div>

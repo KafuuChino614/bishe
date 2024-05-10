@@ -155,7 +155,7 @@ func (orderApi *OrderApi) GetOrderList(c *gin.Context) {
 	}
 }
 
-// GetOrderPublic 不需要鉴权的订单接口
+// GetOrderPublic 返回周销售表
 // @Tags Order
 // @Summary 不需要鉴权的订单接口
 // @accept application/json
@@ -169,6 +169,7 @@ func (orderApi *OrderApi) GetOrderPublic(c *gin.Context) {
 	day := [7]string{"星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"}
 	var pageInfo mySysReq.OrderSearch
 	list, _, _ := orderService.GetOrderInfoList(pageInfo)
+	//处理数据
 	// 初始化周销表数据结构
 	weeklySales := make(map[string]map[string]float64)
 
@@ -201,9 +202,52 @@ func (orderApi *OrderApi) GetOrderPublic(c *gin.Context) {
 			}
 		}
 	}
-
 	response.OkWithDetailed(gin.H{
 		"Day":         day,
 		"weeklySales": weeklySales,
 	}, "获取成功", c)
+}
+
+// GetOrderPublic 返回周销售表
+// @Tags Order
+// @Summary 不需要鉴权的订单接口
+// @accept application/json
+// @Produce application/json
+// @Param data query mySysReq.OrderSearch true "分页获取订单列表"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
+// @Router /order/getOrderList [get]
+func (orderApi *OrderApi) GetAllOrderProfitPublic(c *gin.Context) {
+	//此函数，查询所有订单，然后根据订单信息中的商品名查询商品进价，商品类型，然后计算出利润，统计每个商品类型的利润和，然后返回给前端
+	var orders []mySys.Order
+	var products []mySys.My_goods
+	// 查询所有订单
+	if err := global.GVA_DB.Find(&orders).Error; err != nil {
+		response.FailWithMessage("查询订单失败", c)
+		return
+	}
+	// 查询所有商品
+	if err := global.GVA_DB.Find(&products).Error; err != nil {
+		response.FailWithMessage("查询商品失败", c)
+		return
+	}
+
+	// 创建以商品类型为键的利润映射
+	profitMap := make(map[string]float64)
+
+	// 遍历订单列表
+	for _, order := range orders {
+		// 遍历商品列表
+		for _, product := range products {
+			// 检查商品名是否匹配
+			if product.GoodsName == order.GoodsName {
+				// 累加到对应商品类型的利润中
+				profitMap[order.GoodsType] += (*order.AllPrice - (float64(*order.GoodsNum) * *product.GoodsPrice))
+			}
+		}
+	}
+
+	response.OkWithDetailed(gin.H{
+		"profitData": profitMap,
+	}, "获取成功，利润数据接口", c)
+
 }

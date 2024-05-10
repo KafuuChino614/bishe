@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>周销图</h2>
+    <h2>周销售额/元</h2>
     <div class="chart" id="myEchartsTwo">图表的容器</div>
   </div>
 </template>
@@ -100,5 +100,7 @@ h2 {
 }
 .chart {
   height: 360px;
+  margin-left: auto;
+  margin-right: auto;
 }
 </style>

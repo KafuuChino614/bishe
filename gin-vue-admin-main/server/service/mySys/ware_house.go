@@ -51,8 +51,14 @@ func (wareHouseService *WareHouseService) DeleteWareHouseByIds(IDs []string, del
 // Author [piexlmax](https://github.com/piexlmax)
 func (wareHouseService *WareHouseService) UpdateWareHouse(wareHouse mySys.WareHouse) (err error) {
 	err = global.GVA_DB.Model(&mySys.WareHouse{}).Where("id = ?", wareHouse.ID).Updates(&wareHouse).Error
-	//更新仓库名后 修改库里的仓库名信息
-	
+	newName := wareHouse.WareHouseName
+	//更新仓库名后 根据仓库ID修改warehouseInfo里的仓库名
+	wareHouseInfoID := wareHouse.ID
+	// 更新 warehouseInfo 表中的仓库名
+	err = global.GVA_DB.Model(&mySys.WareHouseInfo{}).Where("ware_house_i_d = ?", wareHouseInfoID).Update("ware_house_name", newName).Error
+	if err != nil {
+		return err
+	}
 	return err
 }
 
