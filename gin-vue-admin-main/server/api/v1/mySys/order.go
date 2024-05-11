@@ -167,10 +167,17 @@ func (orderApi *OrderApi) GetOrderList(c *gin.Context) {
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /order/getOrderList [get]
 func (orderApi *OrderApi) GetOrderPublic(c *gin.Context) {
-	// 获取本周的起始时间和结束时间
+	// 获取当前时间
 	now := time.Now()
+
+	// 计算本周的起始时间（本周一的零点）
 	thisMonday := now.AddDate(0, 0, -int(now.Weekday())+1)
-	thisSunday := thisMonday.AddDate(0, 0, 6)
+	thisMonday = time.Date(thisMonday.Year(), thisMonday.Month(), thisMonday.Day(), 0, 0, 0, 0, thisMonday.Location())
+
+	// 获取本周的结束时间（本周日的23:59:59）
+	thisSunday := thisMonday.AddDate(0, 0, 6).Add(23*time.Hour + 59*time.Minute + 59*time.Second)
+	fmt.Println(thisMonday)
+	fmt.Println(thisSunday)
 	// 此接口不需要鉴权
 	// 示例为返回了一个固定的消息接口，一般本接口用于C端服务，需要自己实现业务逻辑
 	day := [7]string{"星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"}
