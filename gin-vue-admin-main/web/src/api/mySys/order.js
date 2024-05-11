@@ -111,3 +111,10 @@ export const getAllOrderProfitPublic = (params) => {
     params
   })
 }
+export const getOrderGPTPublic = (params) => {
+  return service({
+    url: 'http://localhost:8080/api/order/getOrderGPTPublic',
+    method: 'get',
+    params
+  })
+}

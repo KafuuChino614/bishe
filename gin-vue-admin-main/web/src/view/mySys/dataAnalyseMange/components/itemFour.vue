@@ -89,7 +89,7 @@ function renderChart() {
         },
       },
     },
-    legend: {},
+    // legend: {},
     tooltip: {
       trigger: "axis",
       axisPointer: {

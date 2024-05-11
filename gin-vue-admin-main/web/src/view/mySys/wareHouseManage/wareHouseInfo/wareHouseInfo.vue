@@ -156,7 +156,7 @@
               <el-input v-model.number="formData_out.num" :clearable="true"  @input="goodsNumInput"/>
             </el-form-item>
             <el-form-item label="商品单价:"  prop="price" >
-              <el-input-number v-model="formData_out.price"  style="width:100%" :precision="2" :clearable="true"  disabled="true" />
+              <el-input-number v-model="formData_out.price"  style="width:100%" :precision="2" :clearable="true" @input="goodsNumInput"/>
             </el-form-item>
           </el-form>
           <el-form :model="formData_order" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
@@ -471,11 +471,11 @@ const changeGoods = async () =>{
 const goodsNumInput = async () =>{
   formData_order.value.allPrice=formData_out.value.price*formData_out.value.num*Number(formData_order.value.discount)
 
-}
-//改变折扣 修改总价格
-const changeDiscount = async () =>{
-  formData_order.value.allPrice=formData.value.goodsPrice*formData.value.goodsNum*Number(formData_order.value.discount)
 
+}
+//改变折扣 修改总价格 TODO
+const changeDiscount = async () =>{
+  formData_order.value.allPrice=formData_out.value.price*formData_out.value.num*Number(formData_order.value.discount)
 }
 // 行为控制标记（弹窗内部需要增还是改）
 const type = ref('')

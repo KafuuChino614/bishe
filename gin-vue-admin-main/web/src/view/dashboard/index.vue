@@ -46,21 +46,21 @@
           <div>
 
             <div class="gva-top-card-left-item">
-              使用教学：
+              github：
               <a
                 style="color:#409EFF"
                 target="view_window"
-                href="https://www.bilibili.com/video/BV1Rg411u7xH/"
-              >https://www.bilibili.com/video/BV1Rg411u7xH</a>
+                href="https://github.com/KafuuChino614/bishe"
+              >https://github.com/KafuuChino614/bishe</a>
             </div>
 
             <div class="gva-top-card-left-item">
-              插件仓库：
+              gitee:
               <a
                 style="color:#409EFF"
                 target="view_window"
-                href="https://plugin.gin-vue-admin.com/#/layout/home"
-              >https://plugin.gin-vue-admin.com</a>
+                href="https://gitee.com/liyakai10046/bishe"
+              >https://gitee.com/liyakai10046/bishe</a>
             </div>
 
           </div>
@@ -73,7 +73,7 @@
       </div>
     </div>
 
-    <div class="gva-card-box">
+    <!-- <div class="gva-card-box">
       <div class="gva-card quick-entrance">
         <div class="gva-card-title">快捷入口</div>
         <el-row :gutter="20">
@@ -102,19 +102,18 @@
           </el-col>
         </el-row>
       </div>
-    </div>
+    </div> -->
 
     <div class="gva-card-box">
       <div class="gva-card">
-        <div class="gva-card-title">数据统计</div>
         <div class="p-4">
-          <el-row :gutter="20">
-            <el-col
+          <el-row :gutter="20" class="row-center">
+            <!-- <el-col
               :xs="24"
               :sm="18"
             >
               <echarts-line />
-            </el-col>
+            </el-col> -->
             <el-col
               :xs="24"
               :sm="6"
@@ -196,6 +195,10 @@ const toTarget = (name) => {
 </script>
 
 <style lang="scss" scoped>
+.row-center {
+  display: flex;
+  justify-content: center;
+}
 .page {
     @apply p-0;
     .gva-card-box{

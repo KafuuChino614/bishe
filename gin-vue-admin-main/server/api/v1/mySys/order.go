@@ -1,6 +1,7 @@
 package mySys
 
 import (
+	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/mySys"
@@ -9,6 +10,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+	"strconv"
 )
 
 type OrderApi struct {
@@ -250,4 +252,59 @@ func (orderApi *OrderApi) GetAllOrderProfitPublic(c *gin.Context) {
 		"profitData": profitMap,
 	}, "获取成功，利润数据接口", c)
 
+}
+
+// GetOrderPublic 分析订单,给用户进行进货建议，，给特定的用户推荐商品
+// @Tags Order
+// @Summary 不需要鉴权的订单接口
+// @accept application/json
+// @Produce application/json
+// @Param data query mySysReq.OrderSearch true "分页获取订单列表"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
+// @Router /order/getOrderList [get]
+func (orderApi *OrderApi) GetOrderGPTPublic(c *gin.Context) {
+	// 从前端获取数据
+	numRecommendations, _ := strconv.Atoi(c.Query("numRecommendations"))
+	customerName := c.Query("customerName")
+	similarVlue, _ := strconv.ParseFloat(c.Query("similarVlue"), 64)
+	fmt.Println("前端传来的数据：")
+	fmt.Println("商品推荐数量:", numRecommendations)
+	fmt.Println("顾客姓名:", customerName)
+	fmt.Println("Jaccard系数阈值:", similarVlue)
+	// 根据按钮的值来决定执行的功能
+	action := c.Query("action")
+	fmt.Println("按钮的值:", action)
+	var products []mySys.My_goods
+	var orders []mySys.Order
+	//获取所有订单
+	if err := global.GVA_DB.Find(&orders).Error; err != nil {
+		response.FailWithMessage("查询订单失败", c)
+		return
+	}
+	//获取所有商品
+	// 查询所有商品
+	if err := global.GVA_DB.Find(&products).Error; err != nil {
+		response.FailWithMessage("查询商品失败", c)
+		return
+	}
+	switch action {
+	case "purchase":
+		fmt.Println("执行进货建议功能：")
+		// 进货建议
+		strPurchase := utils.RecommendHotItems(orders, numRecommendations)
+		response.OkWithDetailed(gin.H{
+			"AdviceJinHuo": strPurchase,
+		}, "获取进货建议成功", c)
+	case "recommend":
+		fmt.Println("执行用户喜好商品推荐功能：")
+		// 结合用户喜好进行商品推荐
+		strUserAlike, str := utils.RecommendItemsTOUser(orders, products, customerName, similarVlue)
+		response.OkWithDetailed(gin.H{
+			"strUserAlike": str,
+			"str":          strUserAlike,
+		}, "获取用户喜好商品推荐成功", c)
+	default:
+		fmt.Println("未知操作：", action)
+		response.FailWithMessage("未知操作", c)
+	}
 }

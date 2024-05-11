@@ -158,7 +158,7 @@
                 <el-input v-model.number="formData.goodsNum" :clearable="true" placeholder="请输入商品数量" @input="goodsNumInput"/>
               </el-form-item>
               <el-form-item label="商品价格:"  prop="goodsPrice" >
-                <el-input-number v-model="formData.goodsPrice"  style="width:100%" :precision="2" :clearable="true"  disabled="true"/>
+                <el-input-number v-model="formData.goodsPrice"  style="width:100%" :precision="2" :clearable="true"  @input="goodsNumInput"/>
               </el-form-item>
               <el-form-item label="折扣:"  prop="discount" >
                 <el-select v-model="formData.discount" placeholder="请选择折扣" style="width:100%" :clearable="true"  @change="changeDiscount">
@@ -286,6 +286,7 @@ const formData_updateNum = ref({
           price: 0,
           wareHouseName: '',
           goodsName: '',
+          goodsType:'',
         })
 
 // 验证规则
@@ -490,6 +491,7 @@ const changeWareHouse = async () =>{
         formData_updateNum.value.price=goodsList.value[i].price
         formData_updateNum.value.wareHouseName=goodsList.value[i].wareHouseName
         formData_updateNum.value.goodsName=goodsList.value[i].goodsName
+        formData_updateNum.value.goodsType=goodsList.value[i].goodsType
         break
       }
     }
@@ -514,6 +516,7 @@ const changeDiscount = async () =>{
   //改变数量 修改总价格
   const goodsNumInput = async () =>{
     formData.value.allPrice=formData.value.goodsPrice*formData.value.goodsNum*Number(formData.value.discount)
+   
   }
 // 获取需要的字典 可能为空 按需保留
 setOptions()
@@ -648,6 +651,7 @@ const closeDetailShow = () => {
           price: 0,
           wareHouseName: '',
           goodsName: '',
+          goodsType:'',
         }
 }
 
@@ -682,6 +686,7 @@ const closeDialog = () => {
           price: 0,
           wareHouseName: '',
           goodsName: '',
+          goodsType:'',
         }
 }
 // 弹窗确定
@@ -704,8 +709,8 @@ const enterDialog = async () => {
                  formData.value.uuid=generateRandomString()
                   //TODO 修改下库中商品的数量
                   formData_updateNum.value.num=formData_updateNum.value.num-formData.value.goodsNum
-                  res = await createOrder(formData.value)
                   await updateWareHouseInfo(formData_updateNum.value)
+                  res = await createOrder(formData.value)
                   break
                 case 'update':
                   res = await updateOrder(formData.value)

@@ -29,5 +29,6 @@ func (s *OrderRouter) InitOrderRouter(Router *gin.RouterGroup, PublicRouter *gin
 	{
 		orderRouterWithoutAuth.GET("getOrderPublic", orderApi.GetOrderPublic)                   // 获取周销售
 		orderRouterWithoutAuth.GET("getAllOrderProfitPublic", orderApi.GetAllOrderProfitPublic) // 获取利润数据
+		orderRouterWithoutAuth.GET("getOrderGPTPublic", orderApi.GetOrderGPTPublic)             // 获取利润数据
 	}
 }
