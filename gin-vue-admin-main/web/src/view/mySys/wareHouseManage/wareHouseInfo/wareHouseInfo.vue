@@ -47,6 +47,7 @@
             <template #default="scope">
             <el-button type="primary" link icon="edit" class="table-button" @click="updateWareHouseInfoFunc(scope.row)">出库</el-button>
             <el-button type="primary" link icon="edit" class="table-button" @click="updateWareHouseInfoPriceFunc(scope.row)">修改价格</el-button>
+            <el-button type="primary" link icon="edit" class="table-button" @click="updateWareHouseInfoFuncNew(scope.row)">变更</el-button>
             </template>
         </el-table-column>
         </el-table>
@@ -479,6 +480,15 @@ const changeDiscount = async () =>{
 }
 // 行为控制标记（弹窗内部需要增还是改）
 const type = ref('')
+// 更新行
+const updateWareHouseInfoFuncNew = async(row) => {
+    const res = await findWareHouseInfo({ ID: row.ID })
+    type.value = 'updateNew'
+    if (res.code === 0) {
+        formData.value = res.data.rewareHouseInfo
+        dialogFormVisible.value = true
+    }
+}
 
 
 // 更新行  (出库操作)
@@ -630,6 +640,9 @@ const enterDialog = async () => {
                 case 'create':
                   res = await createWareHouseInfo(formData.value)
                   break
+                case 'updateNew':
+                  res = await updateWareHouseInfo(formData.value)
+                  break
                 case 'update':
                   //出库商品  减少库存中商品的数量 
                   //封装formData_order数据 自动生成一个订单
@@ -660,7 +673,7 @@ const enterDialog = async () => {
                   res = await createWareHouseInfo(formData.value)
                   break
               }
-              if(res.code === 0&&type.value=='updatePrice'){
+              if(res.code === 0&&type.value=='updatePrice'||type.value=='updateNew'){
                 ElMessage({
                   type: 'success',
                   message: '修改成功'

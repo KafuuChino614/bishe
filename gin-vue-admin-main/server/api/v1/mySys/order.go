@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"strconv"
+	"time"
 )
 
 type OrderApi struct {
@@ -166,10 +167,16 @@ func (orderApi *OrderApi) GetOrderList(c *gin.Context) {
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /order/getOrderList [get]
 func (orderApi *OrderApi) GetOrderPublic(c *gin.Context) {
+	// 获取本周的起始时间和结束时间
+	now := time.Now()
+	thisMonday := now.AddDate(0, 0, -int(now.Weekday())+1)
+	thisSunday := thisMonday.AddDate(0, 0, 6)
 	// 此接口不需要鉴权
 	// 示例为返回了一个固定的消息接口，一般本接口用于C端服务，需要自己实现业务逻辑
 	day := [7]string{"星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"}
 	var pageInfo mySysReq.OrderSearch
+	pageInfo.StartCreatedAt = &thisMonday
+	pageInfo.EndCreatedAt = &thisSunday
 	list, _, _ := orderService.GetOrderInfoList(pageInfo)
 	//处理数据
 	// 初始化周销表数据结构
