@@ -54,7 +54,7 @@ func RecommendItemsTOUser(orders []mySys.Order, products []mySys.My_goods, custo
 		score := jaccardCoefficient(userItems, []string{product.GoodsName}) + rand.Float64()*0.09 + 0.009
 		itemScores[product.GoodsName] = score
 		// 添加计算的 Jaccard 系数到日志
-		jaccardLogs = append(jaccardLogs, fmt.Sprintf("{Jaccard 系数：%s - %.2f}", product.GoodsName, itemScores[product.GoodsName]))
+		jaccardLogs = append(jaccardLogs, fmt.Sprintf("{Jaccard 系数(物品相似度)：%s - %.2f}\n", product.GoodsName, itemScores[product.GoodsName]))
 	}
 
 	// 根据相似度排序，推荐相似度高的物品

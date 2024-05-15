@@ -45,15 +45,13 @@ function renderChart() {
       // 遍历每个商品
       for (const productName in products) {
         const productCount = products[productName];
-        
-        // 将商品名及其数量添加到该仓库的数据中
+        // 将商品名及其数量添加到该仓库的数据中   TODO 商品数量为零的则不需要添加
         if (!productTypeData[productName]) {
           productTypeData[productName] = Array(xAxisData.length - 1).fill(0); // 初始化数据，长度减一是因为 xAxisData 已经添加了当前仓库的名称
         }
         productTypeData[productName].push(productCount);
       }
     }
-
     // 将该仓库的数据添加到 seriesData 中
     for (const productName in productTypeData) {
       seriesData.push({

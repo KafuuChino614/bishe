@@ -55,6 +55,12 @@
         <el-table-column align="left" label="商品进价" prop="goodsPrice" width="120" />
         <el-table-column align="left" label="商品库存" prop="goodsNum" width="120" />
         <el-table-column align="left" label="商品供货商" prop="goodsVender" width="120" />
+        <el-table-column align="left" label="生产日期" width="180">
+            <template #default="scope">{{ formatDate(scope.row.manufactureData) }}</template>
+         </el-table-column>
+         <el-table-column align="left" label="过期日期" width="180">
+            <template #default="scope">{{ formatDate(scope.row.expirationDate) }}</template>
+         </el-table-column>
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
@@ -117,6 +123,12 @@
                 <el-option v-for="(item,key) in goodsVenderOptions" :key="key" :label="item" :value="item" />
               </el-select>
             </el-form-item>
+            <el-form-item label="生产日期:"  prop="manufactureData" >
+              <el-date-picker v-model="formData.manufactureData" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
+            </el-form-item>
+            <el-form-item label="过期日期:"  prop="expirationDate" >
+              <el-date-picker v-model="formData.expirationDate" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
+            </el-form-item>
           </el-form>
     </el-drawer>
 
@@ -144,6 +156,12 @@
                 </el-descriptions-item>
                 <el-descriptions-item label="商品供货商">
                         {{ formData.goodsVender }}
+                </el-descriptions-item>
+                <el-descriptions-item label="生产日期">
+                      {{ formatDate(formData.manufactureData) }}
+                </el-descriptions-item>
+                <el-descriptions-item label="过期日期">
+                      {{ formatDate(formData.expirationDate) }}
                 </el-descriptions-item>
         </el-descriptions>
     </el-drawer>
@@ -207,6 +225,8 @@ const formData = ref({
         goodsPrice: 0,
         goodsNum: 0,
         goodsVender: '',
+        manufactureData: new Date(),
+        expirationDate: new Date(),
         })
 
 
@@ -261,6 +281,18 @@ const rule = reactive({
                    message: '不能只输入空格',
                    trigger: ['input', 'blur'],
               }
+              ],
+              manufactureData : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+              ],
+               expirationDate : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
               ],
 })
 
@@ -472,6 +504,8 @@ const closeDetailShow = () => {
           goodsPrice: 0,
           goodsNum: 0,
           goodsVender: '',
+          manufactureData: new Date(),
+          expirationDate: new Date(),
           }
 }
 

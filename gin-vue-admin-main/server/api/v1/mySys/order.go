@@ -322,3 +322,83 @@ func (orderApi *OrderApi) GetOrderGPTPublic(c *gin.Context) {
 		response.FailWithMessage("未知操作", c)
 	}
 }
+
+// GetOrderPublic 获取商品销售金额
+// @Tags Order
+// @Summary 不需要鉴权的订单接口
+// @accept application/json
+// @Produce application/json
+// @Param data query mySysReq.OrderSearch true "分页获取订单列表"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
+// @Router /order/getOrderList [get]
+func (orderApi *OrderApi) GetGoodsSalesPublic(c *gin.Context) {
+	//获取所有订单信息
+	var orders []mySys.Order
+	//获取所有订单
+	if err := global.GVA_DB.Find(&orders).Error; err != nil {
+		response.FailWithMessage("查询订单失败", c)
+		return
+	}
+	//根据订单统计出所有商品的销售额，并作封装处理，返回给前端用来做一个饼状展示图
+	// 统计商品销售额
+	productCounts := make(map[string]float64)
+	for _, order := range orders {
+		productCounts[order.GoodsName] += *order.AllPrice // 商品总销售额累计
+	}
+
+	// 封装返回数据
+	var result []gin.H
+	for goodsName, allPrice := range productCounts {
+		result = append(result, gin.H{
+			"goodsName": goodsName,
+			"allPrice":  allPrice,
+		})
+	}
+	response.OkWithDetailed(gin.H{
+		"productCounts": result,
+	}, "获取成功，获取商品销售金额据接口", c)
+}
+
+// GetOrderPublic 获取商品利润
+// @Tags Order
+// @Summary 不需要鉴权的订单接口
+// @accept application/json
+// @Produce application/json
+// @Param data query mySysReq.OrderSearch true "分页获取订单列表"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
+// @Router /order/getOrderList [get]
+func (orderApi *OrderApi) GetGoodsProfitPublic(c *gin.Context) {
+	var products []mySys.My_goods
+	var orders []mySys.Order
+	//获取所有订单信息
+	if err := global.GVA_DB.Find(&orders).Error; err != nil {
+		response.FailWithMessage("查询订单失败", c)
+		return
+	}
+	//获取所有商品商品信息
+	if err := global.GVA_DB.Find(&products).Error; err != nil {
+		response.FailWithMessage("查询商品失败", c)
+		return
+	}
+	// 统计每个商品的总利润，并作封装处理，返回给前端用来做一个饼状展示图
+	// 统计每个商品的总利润
+	productProfits := make(map[string]float64)
+	for _, order := range orders {
+		for _, product := range products {
+			if order.GoodsName == product.GoodsName {
+				productProfits[order.GoodsName] += *order.AllPrice - *product.GoodsPrice*float64(*order.GoodsNum) // 商品总利润累计
+			}
+		}
+	}
+	// 封装返回数据
+	var result []gin.H
+	for goodsName, allProfit := range productProfits {
+		result = append(result, gin.H{
+			"goodsName": goodsName,
+			"allProfit": allProfit,
+		})
+	}
+	response.OkWithDetailed(gin.H{
+		"productCounts": result,
+	}, "获取成功，商品利润数据接口", c)
+}

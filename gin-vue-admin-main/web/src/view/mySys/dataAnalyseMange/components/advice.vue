@@ -22,7 +22,7 @@
           <el-select id="customerSelect" v-model="selectedCustomer" placeholder="请选择客户" style="width:100%" :clearable="true">
             <el-option v-for="(item,key) in customerNameOptions" :value="item.name" :key="key" :label="item.name" />
           </el-select>
-          <label for="jaccardInput">Jaccard系数阈值：</label>
+          <label for="jaccardInput">Jaccard系数阈值(物品相似度0~1,越接近1相似度越高)：</label>
           <input type="number" id="jaccardInput" v-model="jaccardThreshold" />
           <button @click="getUserRecommendations" data-action="recommend">获取推荐</button>
         </div>

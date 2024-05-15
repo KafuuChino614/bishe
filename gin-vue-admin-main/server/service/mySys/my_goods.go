@@ -56,10 +56,12 @@ func (my_goodsService *My_goodsService) UpdateMy_goods(my_goods mySys.My_goods) 
 	goodsName := my_goods.GoodsName
 	goodsType := my_goods.GoodsType
 	goodsUnit := my_goods.GoodsUnit
+	manufactureData := my_goods.ManufactureData
+	expirationDate := my_goods.ExpirationDate
 	//根据goodsID查询wareHouseInfo表中对应的商品，并修改
 	// 使用原生 SQL 语句更新 wareHouseInfo 表中对应商品的信息
-	sql := "UPDATE warehouseinfo SET goods_name = ?, goods_type = ?, goods_unit = ? WHERE goods_i_d = ?"
-	err = global.GVA_DB.Exec(sql, goodsName, goodsType, goodsUnit, goodsID).Error
+	sql := "UPDATE warehouseinfo SET goods_name = ?, goods_type = ?, goods_unit = ?,manufacture_data = ?,expiration_date = ? WHERE goods_i_d = ?"
+	err = global.GVA_DB.Exec(sql, goodsName, goodsType, goodsUnit, manufactureData, expirationDate, goodsID).Error
 	if err != nil {
 		return err
 	}

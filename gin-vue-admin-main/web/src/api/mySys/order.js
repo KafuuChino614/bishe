@@ -118,3 +118,19 @@ export const getOrderGPTPublic = (params) => {
     params
   })
 }
+
+export const getGoodsSalesPublic = (params) => {
+  return service({
+    url: 'http://localhost:8080/api/order/getGoodsSalesPublic',
+    method: 'get',
+    params
+  })
+}
+
+export const getGoodsProfitPublic = (params) => {
+  return service({
+    url: 'http://localhost:8080/api/order/getGoodsProfitPublic',
+    method: 'get',
+    params
+  })
+}

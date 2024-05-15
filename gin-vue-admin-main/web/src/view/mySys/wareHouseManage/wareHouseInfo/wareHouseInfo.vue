@@ -36,13 +36,19 @@
         @selection-change="handleSelectionChange"
         >
 
-        <el-table-column align="left" label="仓库名" prop="wareHouseName" width="180" />
-        <el-table-column align="left" label="商品名" prop="goodsName" width="180" />
-        <el-table-column align="left" label="商品类型" prop="goodsType" width="180" />
-        <el-table-column align="left" label="计量单位" prop="goodsUnit" width="180" />
-        <el-table-column align="left" label="商品数量" prop="num" width="180" />
-        <el-table-column align="left" label="商品单价（预计售价）" prop="price" width="240" />
+        <el-table-column align="left" label="仓库名" prop="wareHouseName" width="150" />
+        <el-table-column align="left" label="商品名" prop="goodsName" width="150" />
+        <el-table-column align="left" label="商品类型" prop="goodsType" width="150" />
+        <el-table-column align="left" label="计量单位" prop="goodsUnit" width="150" />
+        <el-table-column align="left" label="商品数量" prop="num" width="150" />
+        <el-table-column align="left" label="商品售价" prop="price" width="150" />
         <el-table-column align="left" label="商品总价" prop="priceAll" width="180" />
+        <el-table-column align="left" label="生产日期" width="180">
+            <template #default="scope">{{ formatDate(scope.row.manufactureData) }}</template>
+         </el-table-column>
+         <el-table-column align="left" label="过期日期" width="180">
+            <template #default="scope">{{ formatDate(scope.row.expirationDate) }}</template>
+         </el-table-column>
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link icon="edit" class="table-button" @click="updateWareHouseInfoFunc(scope.row)">出库</el-button>
@@ -115,10 +121,16 @@
               <el-form-item label="计量单位:"  prop="goodsUnit" >
                 <el-input v-model="formData.goodsUnit" :clearable="true"  placeholder="请输入计量单位" disabled="true"/>
               </el-form-item>
+              <el-form-item label="生产日期:"  prop="manufactureData" >
+              <el-date-picker v-model="formData.manufactureData" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  disabled="true"/>
+            </el-form-item>
+            <el-form-item label="过期日期:"  prop="expirationDate" >
+              <el-date-picker v-model="formData.expirationDate" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  disabled="true"/>
+            </el-form-item>
             <el-form-item label="最大可入库数量:">
               <el-input v-model.number="formData.numAlow" disabled="true"/>
             </el-form-item>
-            <el-form-item label="入库数量:"  prop="num" >
+            <el-form-item label="数量:"  prop="num" >
               <el-input v-model.number="formData.num" :clearable="true" />
             </el-form-item>
           </el-form>
@@ -252,6 +264,8 @@ const formData = ref({
         goodsType:'',
         goodsUnit:'',
         numAlow:'',//可入库数量
+        manufactureData: new Date(),
+        expirationDate: new Date(),
         })
 const formData_out = ref({
         wareHouseID: '',
@@ -464,6 +478,8 @@ const changeGoods = async () =>{
       formData.value.price=goodsNameOptions[i].goodsPrice
       formData.value.goodsType=goodsNameOptions[i].goodsType
       formData.value.goodsUnit=goodsNameOptions[i].goodsUnit
+      formData.value.manufactureData=goodsNameOptions[i].manufactureData
+      formData.value.expirationDate=goodsNameOptions[i].expirationDate
     }
   }
 
@@ -576,6 +592,8 @@ const closeDialog = () => {
         goodsName: '',
         goodsType:'',
         goodsUnit:'',
+        manufactureData: new Date(),
+        expirationDate: new Date(),
         }
 
 

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="chart-title">利润分析</h2>
+    <h2 class="chart-title">商品类型利润分析</h2>
     <div class="chart" ref="profitChart"></div>
   </div>
 </template>
